@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { AddEntrants } from "@/components/admin/AddEntrants";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { EntrantTools } from "@/components/admin/EntrantTools";
 import { assertUuid, requireAdminPage } from "@/components/admin/guard";
@@ -31,6 +32,7 @@ export default async function EntrantsPage({
       <AdminNav tournamentId={id} />
       <main className="mx-auto max-w-2xl space-y-4 px-4 py-6">
         <h1 className="text-2xl font-bold">{t.name}: entrants</h1>
+        <AddEntrants tournamentId={id} />
         <div className="flex flex-wrap gap-2">
           <Link className={chip(!status)} href={`/admin/t/${id}/entrants`}>All</Link>
           {STATUSES.map((s) => (
