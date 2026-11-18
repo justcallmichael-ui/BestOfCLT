@@ -8,7 +8,7 @@ import {
   type EntrantRow,
   type NominateResult,
 } from "@/lib/client/api";
-import { useTournament } from "@/lib/client/hooks";
+import { instagramUrl, useTournament } from "@/lib/client/hooks";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
 const RESULT_TEXT: Record<NominateResult, { text: string; good: boolean }> = {
@@ -129,7 +129,7 @@ export function NominatePanel({ slug }: { slug: string }) {
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-6">
-      <h1 className="display text-5xl">Nominate</h1>
+      <h1 className="display text-4xl">Nominate</h1>
       <p className="mt-3 text-lg text-muted">
         Local Charlotte area {category} places only. No national chains.
       </p>
@@ -178,10 +178,26 @@ export function NominatePanel({ slug }: { slug: string }) {
           ) : (
             <ol className="flex flex-col gap-2">
               {filtered.map((row) => (
-                <li key={row.id} className="panel flex min-h-16 items-center gap-3 p-3">
+                <li key={row.id} className="panel flex min-h-14 items-center gap-3 p-2.5">
                   <div className="min-w-0 flex-1">
-                    <p className="truncate text-lg font-bold">{row.displayName}</p>
-                    <p className="truncate text-sm text-muted">@{row.igHandle}</p>
+                    <a
+                      href={instagramUrl(row.igHandle)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`${row.displayName} on Instagram (opens in a new tab)`}
+                      className="block truncate text-base font-bold hover:underline"
+                    >
+                      {row.displayName}
+                    </a>
+                    <a
+                      href={instagramUrl(row.igHandle)}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      aria-label={`@${row.igHandle} on Instagram (opens in a new tab)`}
+                      className="block truncate text-sm text-muted underline decoration-line underline-offset-2 hover:text-chalk"
+                    >
+                      @{row.igHandle}
+                    </a>
                   </div>
                   <button
                     type="button"
@@ -192,7 +208,7 @@ export function NominatePanel({ slug }: { slug: string }) {
                         ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes`
                         : `Upvote ${row.displayName}. ${row.upvoteCount} upvotes so far`
                     }
-                    className={`btn min-w-24 flex-col gap-1 ${row.upvotedByMe ? "btn-ghost" : "btn-primary"}`}
+                    className={`btn min-w-20 flex-col gap-1 ${row.upvotedByMe ? "btn-ghost" : "btn-primary"}`}
                   >
                     <span className="flex items-center gap-1.5">
                       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -209,7 +225,7 @@ export function NominatePanel({ slug }: { slug: string }) {
         </div>
       </section>
 
-      <section aria-labelledby="add-h" className="panel mt-10 p-5">
+      <section aria-labelledby="add-h" className="panel mt-8 p-4">
         <h2 id="add-h" className="display text-3xl">
           Add a place
         </h2>
