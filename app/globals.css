@@ -49,13 +49,13 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 3.25rem;
-  padding: 0 1.25rem;
-  border-radius: 0.75rem;
+  min-height: 2.75rem;
+  padding: 0 1rem;
+  border-radius: 0.65rem;
   font-family: var(--font-display);
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  font-size: 1.2rem;
+  font-size: 1.05rem;
   line-height: 1;
   text-align: center;
   cursor: pointer;
@@ -87,18 +87,18 @@ body {
 
 .panel {
   background: var(--color-panel);
-  border: 2px solid var(--color-line);
-  border-radius: 1rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.85rem;
 }
 
 .field {
   width: 100%;
-  min-height: 3.25rem;
-  padding: 0 1rem;
+  min-height: 2.75rem;
+  padding: 0 0.85rem;
   background: var(--color-ink);
   color: var(--color-chalk);
-  border: 2px solid var(--color-line);
-  border-radius: 0.75rem;
+  border: 1px solid var(--color-line);
+  border-radius: 0.65rem;
   font-size: 1rem;
 }
 .field::placeholder {
