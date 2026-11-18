@@ -121,25 +121,27 @@ describe("entrant moderation", () => {
         "bad handle!, Nope",
         "nocomma",
         "nameless,",
+        "has space, Bad",
         "",
       ].join("\n"),
     );
     expect(res.added).toEqual([
       { handle: "pizza.place", name: "Pizza Place" },
       { handle: "second_spot", name: "Second Spot" },
+      { handle: "nocomma", name: "nocomma" },
+      { handle: "nameless", name: "nameless" },
     ]);
     expect(res.skipped.map((s) => s.reason)).toEqual([
       "Duplicate handle",
       "Duplicate handle",
       "Not a valid handle",
-      "Needs a handle, a comma, then a name",
-      "Name is missing or too long",
+      "Not a valid handle",
     ]);
     const rows = await db.query<{ ig_handle: string; status: string }>(
       "select ig_handle, status from entrants where tournament_id = $1 order by ig_handle",
       [t],
     );
-    expect(rows.map((r) => r.ig_handle)).toEqual(["existing", "pizza.place", "second_spot"]);
+    expect(rows.map((r) => r.ig_handle)).toEqual(["existing", "nameless", "nocomma", "pizza.place", "second_spot"]);
     expect(rows.filter((r) => r.ig_handle !== "existing").every((r) => r.status === "approved")).toBe(true);
     expect((await auditActions()).map((a) => a.action)).toEqual(["entrant.bulk_add"]);
   });
@@ -149,6 +151,13 @@ describe("entrant moderation", () => {
     await admin.addEntrant(t, "@Foo", "Foo");
     await expect(admin.addEntrant(t, "foo", "Foo 2")).rejects.toThrow(/already/);
     await expect(admin.addEntrant(t, "not valid!", "X")).rejects.toThrow(/valid/);
+  });
+
+  it("add entrant uses the handle as the name when no name is given", async () => {
+    const t = await mkTournament();
+    await admin.addEntrant(t, "https://www.instagram.com/Pie_Zaa/");
+    const [row] = await db.query<{ display_name: string }>("select display_name from entrants where tournament_id = $1", [t]);
+    expect(row.display_name).toBe("pie_zaa");
   });
 
   it("startBracket calls lockSeedingAndStart and audits", async () => {
