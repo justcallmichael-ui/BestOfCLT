@@ -1,5 +1,5 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
-import { AddEntrants } from "@/components/admin/AddEntrants";
 import { AdminNav } from "@/components/admin/AdminNav";
 import { assertUuid, requireAdminPage } from "@/components/admin/guard";
 import { ActionButton } from "@/components/admin/ui";
@@ -44,7 +44,9 @@ export default async function ReviewPage({ params }: { params: Promise<{ id: str
             </div>
           </section>
         ))}
-        <AddEntrants tournamentId={id} />
+        <p className="text-sm text-neutral-600">
+          Want to add places yourself? Go to <Link className="font-semibold underline" href={`/admin/t/${id}/entrants`}>Entrants</Link>.
+        </p>
       </main>
     </>
   );
