@@ -231,11 +231,11 @@ export async function renameEntrant(id: string, displayName: string): Promise<vo
   });
 }
 
-export async function addEntrant(tournamentId: string, handleInput: string, displayName: string): Promise<{ id: string }> {
+export async function addEntrant(tournamentId: string, handleInput: string, displayName = ""): Promise<{ id: string }> {
   const handle = normalizeHandle(handleInput);
   if (!handle) throw new AdminError("That is not a valid Instagram handle");
-  const name = displayName.trim();
-  if (!name || name.length > 80) throw new AdminError("Name must be 1 to 80 characters");
+  const name = displayName.trim() || handle;
+  if (name.length > 80) throw new AdminError("Name must be 1 to 80 characters");
   return getDb().tx(async (db) => {
     await mustGetTournament(db, tournamentId);
     const dup = await db.query<{ status: string }>(
@@ -257,7 +257,7 @@ export interface BulkAddResult {
   skipped: { line: string; reason: string }[];
 }
 
-/** One `handle, Display Name` per line. */
+/** One place per line: a handle or profile link, optionally followed by a comma and a display name. */
 export async function bulkAddEntrants(tournamentId: string, text: string): Promise<BulkAddResult> {
   return getDb().tx(async (db) => {
     await mustGetTournament(db, tournamentId);
@@ -267,19 +267,16 @@ export async function bulkAddEntrants(tournamentId: string, text: string): Promi
     for (const raw of text.split(/\r?\n/)) {
       const line = raw.trim();
       if (!line) continue;
+      // A line is either "handle" or "handle, Display Name". Without a name, the handle is used.
       const m = line.match(/^([^,\t]+)[,\t](.*)$/);
-      if (!m) {
-        result.skipped.push({ line, reason: "Needs a handle, a comma, then a name" });
-        continue;
-      }
-      const handle = normalizeHandle(m[1]);
-      const name = m[2].trim();
+      const handle = normalizeHandle(m ? m[1] : line);
       if (!handle) {
         result.skipped.push({ line, reason: "Not a valid handle" });
         continue;
       }
-      if (!name || name.length > 80) {
-        result.skipped.push({ line, reason: "Name is missing or too long" });
+      const name = (m ? m[2].trim() : "") || handle;
+      if (name.length > 80) {
+        result.skipped.push({ line, reason: "Name is too long" });
         continue;
       }
       if (seen.has(handle)) {
