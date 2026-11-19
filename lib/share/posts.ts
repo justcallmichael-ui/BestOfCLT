@@ -57,6 +57,11 @@ export function voteUrl(slug: string, siteUrl: string = brand.siteUrl): string {
   return `${siteUrl.replace(/\/+$/, "")}/t/${encodeURIComponent(slug)}/vote`;
 }
 
+/** Short link to a place: site/p/handle. Used for stories and bios. */
+export function shortEntrantUrl(handle: string, siteUrl: string = brand.siteUrl): string {
+  return `${siteUrl.replace(/\/+$/, "")}/p/${encodeURIComponent(handle)}`;
+}
+
 export function entrantPageUrl(slug: string, handle: string, siteUrl: string = brand.siteUrl): string {
   return `${siteUrl.replace(/\/+$/, "")}/t/${encodeURIComponent(slug)}/p/${encodeURIComponent(handle)}`;
 }
