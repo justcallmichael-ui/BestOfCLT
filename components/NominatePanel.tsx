@@ -9,6 +9,7 @@ import {
   type NominateResult,
 } from "@/lib/client/api";
 import { instagramUrl, useTournament } from "@/lib/client/hooks";
+import Link from "next/link";
 import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
@@ -186,15 +187,13 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                 <li key={row.id} className="panel flex min-h-14 items-center gap-3 p-2.5">
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
-                    <a
-                      href={instagramUrl(row.igHandle)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`${row.displayName} on Instagram (opens in a new tab)`}
+                    <Link
+                      href={`/t/${encodeURIComponent(slug)}/p/${encodeURIComponent(row.igHandle)}`}
+                      aria-label={`${row.displayName}: open the place page`}
                       className="block truncate text-base font-bold hover:underline"
                     >
                       {row.displayName}
-                    </a>
+                    </Link>
                     <a
                       href={instagramUrl(row.igHandle)}
                       target="_blank"
