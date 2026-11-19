@@ -82,6 +82,7 @@ export type NominateResult =
   | "upvoted"
   | "already_upvoted"
   | "rejected"
+  | "no_votes_left"
   | "closed"
   | "invalid_handle";
 
