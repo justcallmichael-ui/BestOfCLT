@@ -51,6 +51,15 @@ export function TournamentHome({ slug }: { slug: string }) {
               <Link href={`${base}/how-it-works`} className="btn btn-ghost">
                 How it works
               </Link>
+              {data.tournament.nominationsCloseAt ? (
+                <div className="flex justify-center text-center">
+                  <Countdown
+                    to={data.tournament.nominationsCloseAt}
+                    label="Voting starts in"
+                    doneText="Nominations are closing. Voting starts soon."
+                  />
+                </div>
+              ) : null}
               <NominatePanel slug={slug} embedded />
             </>
           ) : data.tournament.status === "bracket" ? (
