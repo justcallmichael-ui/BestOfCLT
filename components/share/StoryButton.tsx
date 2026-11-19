@@ -27,6 +27,7 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
     const steps = copied
       ? "Link copied. In your story tap the sticker button, pick Link, paste it, and set the text to Vote for us."
       : "In your story tap the sticker button, pick Link, and add this page's link.";
+    setMsg(steps);
     try {
       const res = await fetch(`/api/og/entrant?id=${encodeURIComponent(entrantId)}`);
       if (!res.ok) throw new Error("graphic");
@@ -74,6 +75,9 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
           className="inline-flex min-h-9 items-center px-2 text-sm font-bold text-black underline underline-offset-4"
         >
           {busy ? "Getting it ready..." : label}
+        </button>
+        <button type="button" onClick={() => void copyLink()} className="text-xs font-bold text-black underline underline-offset-4">
+          Copy link
         </button>
         {msg ? <span aria-live="polite" className="text-center text-xs text-black">{msg}</span> : null}
       </span>
