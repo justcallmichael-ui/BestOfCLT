@@ -14,6 +14,8 @@ export async function POST(req: Request) {
     case "ok":
     case "already":
       return jsonWithVoter({ ok: true, already: r.kind === "already", upvoteCount: r.upvoteCount }, undefined, voter);
+    case "no_votes_left":
+      return jsonWithVoter({ error: "no_votes_left" }, { status: 422 }, voter);
     case "closed":
       return jsonWithVoter({ error: "closed" }, { status: 409 }, voter);
     case "rate_limited":
