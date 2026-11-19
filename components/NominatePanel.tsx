@@ -220,7 +220,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                 <li
                   key={row.id}
                   id={`place-${row.igHandle}`}
-                  className={`panel flex min-h-14 scroll-mt-24 items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
+                  className={`panel flex min-h-14 scroll-mt-24 flex-wrap items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
                 >
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
@@ -260,6 +260,16 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                     </span>
                     <span className="text-xs tracking-widest">{row.upvotedByMe ? "Upvoted" : "Upvote"}</span>
                   </button>
+                  <div className="flex basis-full justify-center">
+                    <StoryButton
+                      compact
+                      entrantId={row.id}
+                      handle={row.igHandle}
+                      url={`/p/${encodeURIComponent(row.igHandle)}`}
+                      title={`Vote for ${row.displayName}`}
+                      label="Share to story"
+                    />
+                  </div>
                 </li>
               ))}
             </ol>
