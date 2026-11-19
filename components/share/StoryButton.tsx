@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { copyText } from "./CopyButton";
 
 /**
  * Owner button. On a phone it opens the share sheet with the story graphic, so Instagram
@@ -54,13 +55,27 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
     }
   }
 
+  async function copyLink() {
+    const ok = await copyText(new URL(url, window.location.origin).toString());
+    setMsg(
+      ok
+        ? "Link copied. Now open your story, tap the sticker button, pick Link and paste it."
+        : "Could not copy the link. Press and hold the page address to copy it.",
+    );
+  }
+
   return (
-    <span className="inline-flex flex-col gap-1">
-      <button type="button" onClick={onClick} disabled={busy} className="btn btn-primary">
-        {busy ? "Getting it ready..." : label}
-      </button>
+    <span className="inline-flex flex-col gap-2">
+      <span className="flex flex-wrap gap-2">
+        <button type="button" onClick={onClick} disabled={busy} className="btn btn-primary">
+          {busy ? "Getting it ready..." : label}
+        </button>
+        <button type="button" onClick={() => void copyLink()} className="btn btn-ghost">
+          Copy link
+        </button>
+      </span>
       <span aria-live="polite" className="max-w-xs text-sm text-muted">
-        {msg ?? "We copy the link for you. In your story, tap the sticker button, pick Link and paste it."}
+        {msg ?? "Tap Copy link, then in your story tap the sticker button, pick Link and paste it."}
       </span>
     </span>
   );
