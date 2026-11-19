@@ -55,18 +55,18 @@ export function TournamentHome({ slug }: { slug: string }) {
                   />
                 ) : null}
               </div>
-              <NominatePanel slug={slug} embedded />
               <Link href={`${base}/how-it-works`} className="btn btn-ghost">
                 How it works
               </Link>
+              <NominatePanel slug={slug} embedded />
             </>
           ) : data.tournament.status === "bracket" ? (
             <>
-              <BracketPhase data={data} base={base} />
-              <ScoresNote asOf={data.scoresAsOf} />
               <Link href={`${base}/how-it-works`} className="btn btn-ghost">
                 How it works
               </Link>
+              <BracketPhase data={data} base={base} />
+              <ScoresNote asOf={data.scoresAsOf} />
             </>
           ) : data.tournament.status === "complete" ? (
             <>
