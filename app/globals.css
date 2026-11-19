@@ -73,6 +73,9 @@ body {
   background: var(--color-accent);
   color: var(--color-accent-ink);
 }
+.btn-primary:disabled {
+  opacity: 1;
+}
 .btn-primary:hover:not(:disabled) {
   background: var(--color-accent-hover);
 }
