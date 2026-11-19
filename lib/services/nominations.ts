@@ -1,5 +1,6 @@
 import { getDb, type Db } from "@/lib/db";
 import { normalizeHandle } from "@/lib/handles";
+import { VOTES_PER_VOTER } from "@/lib/config";
 import { nominationsIpLimited, nominationsLimited, upvoteDeviceLimited, upvoteIpLimited } from "@/lib/ratelimit";
 
 export type PublicEntrant = {
@@ -47,6 +48,7 @@ export type NominateResult =
   | { kind: "upvoted"; entrantId: string }
   | { kind: "already_upvoted"; entrantId: string }
   | { kind: "rejected" }
+  | { kind: "no_votes_left" }
   | { kind: "closed" }
   | { kind: "invalid_handle" }
   | { kind: "rate_limited" }
@@ -57,6 +59,16 @@ type Phase = { id: string; open: boolean };
 function phase(t: { id: string; status: string; nominations_close_at: Date | string | null }, now: Date): Phase {
   const closed = t.nominations_close_at != null && new Date(t.nominations_close_at).getTime() <= now.getTime();
   return { id: t.id, open: t.status === "nominations" && !closed };
+}
+
+/** Upvotes this voter has on approved places in a tournament. */
+async function votesUsed(db: Db, tournamentId: string, voterId: string): Promise<number> {
+  const [r] = await db.query<{ n: number }>(
+    `select count(*)::int as n from upvotes u join entrants e on e.id = u.entrant_id
+     where e.tournament_id = $1 and e.status = 'approved' and u.voter_id = $2`,
+    [tournamentId, voterId],
+  );
+  return Number(r?.n ?? 0);
 }
 
 /** Insert the upvote (unique constraint decides) and bump the counter only if a row went in. */
@@ -115,7 +127,10 @@ export async function nominate(input: {
         [t.id, handle, displayName, now.toISOString()],
       );
       if (created.length > 0) {
-        await addUpvote(tx, created[0].id, input.voterId, input.ipHash);
+        // A new place counts as one of the voter's votes. Out of votes: still add it, without the vote.
+        if ((await votesUsed(tx, t.id, input.voterId)) < VOTES_PER_VOTER) {
+          await addUpvote(tx, created[0].id, input.voterId, input.ipHash);
+        }
         return { kind: "created_pending", entrantId: created[0].id };
       }
       // Lost a race with a concurrent nomination of the same handle: treat as an upvote.
@@ -126,6 +141,9 @@ export async function nominate(input: {
     if (existing.status === "rejected" || existing.status === "withdrawn") return { kind: "rejected" };
     if (await upvoteIpLimited(tx, existing.id, input.ipHash, now)) return { kind: "rate_limited" };
     if (await upvoteDeviceLimited(tx, existing.id, input.voterId, input.ipHash, now)) return { kind: "rate_limited" };
+    if (!(await hasUpvoted(tx, existing.id, input.voterId)) && (await votesUsed(tx, t.id, input.voterId)) >= VOTES_PER_VOTER) {
+      return { kind: "no_votes_left" };
+    }
     const r = await addUpvote(tx, existing.id, input.voterId, input.ipHash);
     return { kind: r.inserted ? "upvoted" : "already_upvoted", entrantId: existing.id };
   });
@@ -139,7 +157,13 @@ async function findEntrant(db: Db, tournamentId: string, handle: string) {
   return e ?? null;
 }
 
+async function hasUpvoted(db: Db, entrantId: string, voterId: string): Promise<boolean> {
+  const r = await db.query<{ id: string }>(`select id from upvotes where entrant_id = $1 and voter_id = $2`, [entrantId, voterId]);
+  return r.length > 0;
+}
+
 export type UpvoteResult =
+  | { kind: "no_votes_left" }
   | { kind: "ok"; upvoteCount: number }
   | { kind: "already"; upvoteCount: number }
   | { kind: "rate_limited" }
@@ -171,6 +195,9 @@ export async function upvote(input: {
     }
     if (await upvoteIpLimited(tx, e.id, input.ipHash, now)) return { kind: "rate_limited" };
     if (await upvoteDeviceLimited(tx, e.id, input.voterId, input.ipHash, now)) return { kind: "rate_limited" };
+    if (!(await hasUpvoted(tx, e.id, input.voterId)) && (await votesUsed(tx, e.tid, input.voterId)) >= VOTES_PER_VOTER) {
+      return { kind: "no_votes_left" };
+    }
     const r = await addUpvote(tx, e.id, input.voterId, input.ipHash);
     return { kind: r.inserted ? "ok" : "already", upvoteCount: r.upvoteCount };
   });
