@@ -1,5 +1,6 @@
 import type { Entrant, MatchupCard } from "@/lib/client/api";
 import { formatScore, formatWhen } from "@/lib/client/time";
+import { PlaceLogo } from "./PlaceLogo";
 
 function Side({
   e,
@@ -26,6 +27,7 @@ function Side({
       }`}
     >
       <span className={`display w-6 shrink-0 text-center text-base ${winner ? "" : "text-accent"}`}>{e.seed ?? ""}</span>
+      <PlaceLogo handle={e.igHandle} name={e.displayName} size={32} />
       <span className="min-w-0 flex-1">
         <span className={`block truncate leading-tight ${winner ? "text-lg font-extrabold" : "text-base font-semibold"}`}>
           {e.displayName}
