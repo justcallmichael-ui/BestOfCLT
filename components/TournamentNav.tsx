@@ -23,9 +23,9 @@ export function TournamentNav({ slug, initialStatus }: { slug: string; initialSt
   return (
     <nav
       aria-label="Tournament"
-      className="fixed inset-x-0 bottom-0 z-40 border-t-2 border-line bg-ink pb-[env(safe-area-inset-bottom)] md:static md:border-b-2 md:border-t-0 md:pb-0"
+      className="fixed inset-x-0 bottom-0 z-40 border-t border-line/10 bg-ink/90 pb-[env(safe-area-inset-bottom)] backdrop-blur-md md:static md:border-b md:border-t-0 md:pb-0"
     >
-      <ul className="mx-auto flex w-full max-w-5xl">
+      <ul className="mx-auto flex w-full max-w-5xl gap-1 p-1.5 md:justify-center md:gap-2 md:p-2">
         {items.map((item) => {
           const active = pathname === item.href;
           return (
@@ -34,8 +34,8 @@ export function TournamentNav({ slug, initialStatus }: { slug: string; initialSt
                 href={item.href}
                 tabIndex={item.hidden ? -1 : undefined}
                 aria-current={active ? "page" : undefined}
-                className={`display flex min-h-14 items-center justify-center border-t-4 text-lg md:border-b-4 md:border-t-0 ${
-                  active ? "border-accent text-accent" : "border-transparent text-chalk"
+                className={`flex min-h-11 items-center justify-center rounded-full text-[0.95rem] font-bold md:px-6 ${
+                  active ? "bg-accent text-white" : "text-muted hover:bg-panel-2"
                 } ${item.hidden ? "invisible" : ""
                 }`}
               >
