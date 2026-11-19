@@ -110,7 +110,7 @@ export async function nominate(input: {
       if (await nominationsIpLimited(tx, input.ipHash, now)) return { kind: "rate_limited" };
       const created = await tx.query<{ id: string }>(
         `insert into entrants (tournament_id, ig_handle, display_name, status, upvote_count, first_nominated_at)
-         values ($1, $2, $3, 'pending', 0, $4)
+         values ($1, $2, $3, 'approved', 0, $4)
          on conflict (tournament_id, ig_handle) do nothing returning id`,
         [t.id, handle, displayName, now.toISOString()],
       );
