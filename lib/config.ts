@@ -1,3 +1,6 @@
+/** Upvotes each person gets during nominations. */
+export const VOTES_PER_VOTER = 5;
+
 const name = process.env.NEXT_PUBLIC_BRAND_NAME ?? "Best of CLT";
 const presentedBy = process.env.NEXT_PUBLIC_PRESENTED_BY ?? "CLTBeat";
 const igHandle = process.env.NEXT_PUBLIC_IG_HANDLE ?? "cltbeat";
