@@ -432,8 +432,9 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
           {st.text}
         </div>
         {st.sub ? <div style={{ display: "flex", marginTop: 10, fontSize: 34, color: p.muted }}>{st.sub}</div> : null}
-        <div style={{ display: "flex", marginTop: 70, fontSize: 52, color: p.accent }}>
-          {`Vote at ${brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "")}`}
+        <div style={{ display: "flex", marginTop: 70, fontSize: 68, color: p.accent, textAlign: "center" }}>Tap the link to vote</div>
+        <div style={{ display: "flex", marginTop: 14, fontSize: 40, color: p.muted }}>
+          {`${brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "")}/p/${v.entrant.igHandle}`}
         </div>
       </div>
     </Frame>
