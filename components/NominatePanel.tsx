@@ -208,7 +208,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
           ) : (
             <ol className="flex flex-col gap-2">
               {filtered.map((row) => (
-                <li key={row.id} className="panel flex min-h-14 items-center gap-3 p-2.5">
+                <li key={row.id} className="panel flex min-h-14 items-center gap-3 border-2 border-accent p-2.5">
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <Link
