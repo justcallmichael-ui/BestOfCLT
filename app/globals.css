@@ -12,7 +12,7 @@
   --color-accent-hover: color-mix(in srgb, var(--color-accent), white 18%);
   --color-faint: color-mix(in srgb, var(--color-muted), var(--color-ink) 30%);
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: Impact, Haettenschweiler, "Arial Narrow Bold", "Franklin Gothic Medium", "Arial Narrow", sans-serif;
+  --font-display: "Avenir Next", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
 }
 
 html {
@@ -22,9 +22,7 @@ html {
 }
 
 body {
-  background:
-    repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 3%, transparent) 0 2px, transparent 2px 22px),
-    var(--color-ink);
+  background: var(--color-ink);
   color: var(--color-chalk);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
@@ -38,10 +36,9 @@ body {
 
 .display {
   font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.01em;
-  font-weight: 400;
-  line-height: 0.95;
+  letter-spacing: -0.025em;
+  font-weight: 800;
+  line-height: 1.05;
 }
 
 .btn {
@@ -49,18 +46,18 @@ body {
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  min-height: 2.75rem;
-  padding: 0 1rem;
-  border-radius: 0.65rem;
+  min-height: 2.9rem;
+  padding: 0 1.4rem;
+  border-radius: 999px;
   font-family: var(--font-display);
-  text-transform: uppercase;
-  letter-spacing: 0.04em;
-  font-size: 1.05rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+  font-size: 1rem;
   line-height: 1;
   text-align: center;
   cursor: pointer;
-  border: 2px solid transparent;
-  transition: transform 0.12s ease, background-color 0.12s ease;
+  border: 1.5px solid transparent;
+  transition: transform 0.12s ease, background-color 0.15s ease, box-shadow 0.15s ease;
 }
 .btn:active:not(:disabled) {
   transform: scale(0.98);
@@ -71,7 +68,8 @@ body {
 }
 .btn-primary {
   background: var(--color-accent);
-  color: var(--color-accent-ink);
+  color: #fff;
+  box-shadow: 0 6px 16px -6px color-mix(in srgb, var(--color-accent), transparent 35%);
 }
 .btn-primary:disabled {
   opacity: 1;
@@ -82,7 +80,7 @@ body {
 .btn-ghost {
   background: transparent;
   color: var(--color-chalk);
-  border-color: var(--color-line);
+  border-color: color-mix(in srgb, var(--color-line), transparent 70%);
 }
 .btn-ghost:hover:not(:disabled) {
   background: var(--color-panel-2);
@@ -90,8 +88,9 @@ body {
 
 .panel {
   background: var(--color-panel);
-  border: 1px solid var(--color-line);
-  border-radius: 0.85rem;
+  border: 1px solid color-mix(in srgb, var(--color-line), transparent 85%);
+  border-radius: 1rem;
+  box-shadow: 0 1px 2px rgba(22, 20, 18, 0.04), 0 8px 24px -14px rgba(22, 20, 18, 0.18);
 }
 
 .field {
@@ -100,8 +99,8 @@ body {
   padding: 0 0.85rem;
   background: var(--color-ink);
   color: var(--color-chalk);
-  border: 1px solid var(--color-line);
-  border-radius: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--color-line), transparent 75%);
+  border-radius: 0.85rem;
   font-size: 1rem;
 }
 .field::placeholder {
