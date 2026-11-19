@@ -377,18 +377,20 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
       </div>
     );
   }
+  const nominating = !c && !v.champion && !v.eliminated && v.tournament.status === "nominations";
+  const host = brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "");
   return (
     <Frame w={width} h={height}>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 170 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 280 }}>
         <div style={{ display: "flex", fontSize: 44, letterSpacing: 8, textTransform: "uppercase", color: p.accent }}>
           {brand.name}
         </div>
-        <div style={{ display: "flex", marginTop: 60, fontSize: 56, color: p.muted }}>Vote for</div>
+        <div style={{ display: "flex", marginTop: 70, fontSize: 64, color: p.muted }}>Vote for</div>
         <div
           style={{
             display: "flex",
             marginTop: 10,
-            fontSize: nameSize(name, 120),
+            fontSize: nameSize(name, 130),
             textTransform: "uppercase",
             textAlign: "center",
             lineHeight: 1.05,
@@ -400,7 +402,7 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
           {`@${v.entrant.igHandle}${v.entrant.seed != null ? `  ·  Seed ${v.entrant.seed}` : ""}`}
         </div>
       </div>
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 70 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 60 }}>
         {c ? (
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: "100%" }}>
             <div style={{ display: "flex", fontSize: 40, color: p.muted }}>{c.matchup.roundName}</div>
@@ -422,20 +424,35 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
         <div
           style={{
             display: "flex",
-            marginTop: 40,
-            fontSize: st.live ? 76 : 52,
+            marginTop: c ? 36 : 0,
+            fontSize: st.live ? 76 : 48,
             textTransform: st.live ? "uppercase" : "none",
             color: st.live ? p.accent : p.text,
             textAlign: "center",
           }}
         >
-          {st.text}
+          {nominating ? `Nominated for ${clip(v.tournament.name, 40)}` : st.text}
         </div>
         {st.sub ? <div style={{ display: "flex", marginTop: 10, fontSize: 34, color: p.muted }}>{st.sub}</div> : null}
-        <div style={{ display: "flex", marginTop: 70, fontSize: 68, color: p.accent, textAlign: "center" }}>Tap the link to vote</div>
-        <div style={{ display: "flex", marginTop: 14, fontSize: 40, color: p.muted }}>
-          {`${brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "")}/p/${v.entrant.igHandle}`}
+        <div
+          style={{
+            display: "flex",
+            marginTop: 90,
+            padding: "30px 60px",
+            borderRadius: 999,
+            background: p.accent,
+            color: "#ffffff",
+            fontSize: 64,
+            textTransform: "uppercase",
+            letterSpacing: 2,
+          }}
+        >
+          Tap to vote
         </div>
+        <div style={{ display: "flex", marginTop: 36, fontSize: 40, color: p.muted }}>
+          {nominating ? "Takes 5 seconds. No signup." : "Takes 5 seconds."}
+        </div>
+        <div style={{ display: "flex", marginTop: 24, fontSize: 36, color: p.muted }}>{`${host}/p/${v.entrant.igHandle}`}</div>
       </div>
     </Frame>
   );
