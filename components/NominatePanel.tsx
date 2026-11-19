@@ -13,7 +13,7 @@ import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
 const RESULT_TEXT: Record<NominateResult, { text: string; good: boolean }> = {
-  created_pending: { text: "Thanks. It will appear once it is reviewed.", good: true },
+  created_pending: { text: "Added. It is on the list now.", good: true },
   upvoted: { text: "That place is already on the list. We added your upvote.", good: true },
   already_upvoted: { text: "You already upvoted that place.", good: true },
   rejected: { text: "That place cannot be added to this tournament.", good: false },
@@ -112,7 +112,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
         setHandle("");
         setName("");
       }
-      if (r.result === "upvoted") load();
+      if (r.result === "upvoted" || r.result === "created_pending") load();
     } catch (e) {
       setFormResult({
         text:
