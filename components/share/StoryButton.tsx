@@ -25,7 +25,7 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
       copied = false;
     }
     const steps = copied
-      ? "Link copied. In your story tap the sticker button, pick Link, and paste it."
+      ? "Link copied. In your story tap the sticker button, pick Link, paste it, and set the text to Vote for us."
       : "In your story tap the sticker button, pick Link, and add this page's link.";
     try {
       const res = await fetch(`/api/og/entrant?id=${encodeURIComponent(entrantId)}`);
@@ -59,7 +59,7 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
     const ok = await copyText(new URL(url, window.location.origin).toString());
     setMsg(
       ok
-        ? "Link copied. Now open your story, tap the sticker button, pick Link and paste it."
+        ? "Link copied. Now open your story, tap the sticker button, pick Link, paste it, and set the text to Vote for us."
         : "Could not copy the link. Press and hold the page address to copy it.",
     );
   }
@@ -75,7 +75,7 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
         </button>
       </span>
       <span aria-live="polite" className="max-w-xs text-sm text-muted">
-        {msg ?? "Tap Copy link, then in your story tap the sticker button, pick Link and paste it."}
+        {msg ?? "Tap Copy link, then in your story tap the sticker button, pick Link, paste it, and set the text to Vote for us."}
       </span>
     </span>
   );
