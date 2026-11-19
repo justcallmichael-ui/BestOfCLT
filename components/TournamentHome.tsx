@@ -50,8 +50,8 @@ export function TournamentHome({ slug }: { slug: string }) {
                 {data.tournament.nominationsCloseAt ? (
                   <Countdown
                     to={data.tournament.nominationsCloseAt}
-                    label="Nominations close in"
-                    doneText="Nominations are closing"
+                    label="Voting starts in"
+                    doneText="Nominations are closing. Voting starts soon."
                   />
                 ) : null}
               </div>
