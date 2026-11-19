@@ -19,6 +19,8 @@ export async function POST(req: Request) {
     case "upvoted":
     case "already_upvoted":
       return jsonWithVoter({ result: r.kind, entrantId: r.entrantId }, undefined, voter);
+    case "no_votes_left":
+      return jsonWithVoter({ result: "no_votes_left" }, undefined, voter);
     case "rejected":
       return jsonWithVoter({ result: "rejected" }, undefined, voter);
     case "invalid_handle":
