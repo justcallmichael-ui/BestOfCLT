@@ -126,6 +126,23 @@ describe("upvote", () => {
     expect((await upvote({ entrantId: id, voterId: v, ipHash: "same" })).kind).toBe("rate_limited");
   });
 
+  it("gives each voter 5 upvotes, repeats do not use another, and a new place without a vote is still added", async () => {
+    const v = await voter("cap");
+    const ids: string[] = [];
+    for (let i = 0; i < 6; i++) ids.push(await approved(`cap${i}`));
+    const first = await voter("first");
+    for (const id of ids) await upvote({ entrantId: id, voterId: first, ipHash: "ipf" });
+    for (let i = 0; i < 5; i++) expect((await upvote({ entrantId: ids[i], voterId: v, ipHash: "ip" })).kind).toBe("ok");
+    expect((await upvote({ entrantId: ids[0], voterId: v, ipHash: "ip" })).kind).toBe("already");
+    expect((await upvote({ entrantId: ids[5], voterId: v, ipHash: "ip" })).kind).toBe("no_votes_left");
+    expect((await nom(v, "cap5")).kind).toBe("no_votes_left");
+    expect((await nom(v, "brandnew")).kind).toBe("created_pending");
+    const [e] = await db.query<{ upvote_count: number }>(`select upvote_count from entrants where ig_handle = 'brandnew'`);
+    expect(e.upvote_count).toBe(0);
+    const other = await voter("cap2");
+    expect((await upvote({ entrantId: ids[5], voterId: other, ipHash: "ip2" })).kind).toBe("ok");
+  });
+
   it("only approved entrants in an open nominations phase", async () => {
     const v = await voter("a");
     const [p] = await db.query<{ id: string }>(
