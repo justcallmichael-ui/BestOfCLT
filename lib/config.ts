@@ -16,10 +16,10 @@ export const brand = {
  * (ink, panel, chalk, muted, accent, accent-ink). Change the brand colors here only.
  */
 export const palette = {
-  background: "#0a0a0c",
-  panel: "#15151a",
-  text: "#f6f3ec",
-  muted: "#aeaeba",
-  accent: "#ff5a1f",
-  accentText: "#130904",
+  background: "#f7f2ea",
+  panel: "#fffdf8",
+  text: "#161412",
+  muted: "#5b554d",
+  accent: "#f82d26",
+  accentText: "#161412",
 };
