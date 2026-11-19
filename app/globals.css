@@ -1,14 +1,14 @@
 @import "tailwindcss";
 
 @theme inline {
-  --color-ink: #0a0a0c;
-  --color-panel: #15151a;
-  --color-panel-2: #1f1f27;
-  --color-line: #34343f;
-  --color-chalk: #f6f3ec;
-  --color-muted: #aeaeba;
-  --color-accent: #ff5a1f;
-  --color-accent-ink: #130904;
+  --color-ink: #f7f2ea;
+  --color-panel: #fffdf8;
+  --color-panel-2: #efe8dc;
+  --color-line: #1c1a18;
+  --color-chalk: #161412;
+  --color-muted: #5b554d;
+  --color-accent: #f82d26;
+  --color-accent-ink: #161412;
   --color-accent-hover: color-mix(in srgb, var(--color-accent), white 18%);
   --color-faint: color-mix(in srgb, var(--color-muted), var(--color-ink) 30%);
   --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
@@ -17,13 +17,13 @@
 
 html {
   background: var(--color-ink);
-  color-scheme: dark;
+  color-scheme: light;
   -webkit-text-size-adjust: 100%;
 }
 
 body {
   background:
-    repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 4.5%, transparent) 0 2px, transparent 2px 22px),
+    repeating-linear-gradient(135deg, color-mix(in srgb, var(--color-accent) 3%, transparent) 0 2px, transparent 2px 22px),
     var(--color-ink);
   color: var(--color-chalk);
   font-family: var(--font-sans);
@@ -256,4 +256,9 @@ body {
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+/* Red used as text on the cream background is a shade darker so it stays readable. */
+.text-accent {
+  color: #c4201b;
 }
