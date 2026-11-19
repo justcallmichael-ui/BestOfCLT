@@ -167,7 +167,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
             <StoryButton
               entrantId={shareRow.id}
               handle={shareRow.igHandle}
-              url={`/t/${encodeURIComponent(slug)}/p/${encodeURIComponent(shareRow.igHandle)}`}
+              url={`/p/${encodeURIComponent(shareRow.igHandle)}`}
               title={`Vote for ${shareRow.displayName}`}
               label="Share on your story"
             />
@@ -212,7 +212,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <Link
-                      href={`/t/${encodeURIComponent(slug)}/p/${encodeURIComponent(row.igHandle)}`}
+                      href={`/p/${encodeURIComponent(row.igHandle)}`}
                       aria-label={`${row.displayName}: open the place page`}
                       className="block truncate text-base font-bold hover:underline"
                     >
