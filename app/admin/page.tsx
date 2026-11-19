@@ -5,6 +5,7 @@ import { requireAdminPage } from "@/components/admin/guard";
 import { fmtDate, toLocalInput } from "@/components/admin/format";
 import { ActionButton } from "@/components/admin/ui";
 import { StartBracketForm } from "@/components/admin/RoundTools";
+import { SetCloseTime } from "@/components/admin/SetCloseTime";
 import { nextNoonEastern } from "@/lib/services/schedule";
 import { listTournaments } from "@/lib/services/admin";
 
@@ -41,6 +42,9 @@ export default async function Dashboard() {
               <ActionButton big className="w-full" path="/api/admin/tournaments/open-nominations" body={{ id: t.id }} tone="green">
                 Open nominations
               </ActionButton>
+            )}
+            {(t.status === "draft" || t.status === "nominations") && (
+              <SetCloseTime tournamentId={t.id} current={t.nominations_close_at ? toLocalInput(t.nominations_close_at) : ""} />
             )}
             {t.status === "nominations" && (
               <StartBracketForm tournamentId={t.id} defaultStart={defaultStart} />
