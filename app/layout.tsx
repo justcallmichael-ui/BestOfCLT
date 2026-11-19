@@ -44,8 +44,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           Skip to content
         </a>
         <div className="flex min-h-dvh flex-col">
-          <header className="border-b-2 border-line bg-ink/90">
-            <div className="mx-auto flex min-h-14 w-full max-w-5xl items-center px-4">
+          <header className="sticky top-0 z-30 border-b border-line/10 bg-ink/80 backdrop-blur-md">
+            <div className="mx-auto flex min-h-16 w-full max-w-5xl items-center justify-center px-4">
               <Link
                 href="/"
                 className="display flex min-h-12 items-center gap-2 text-2xl text-chalk"
