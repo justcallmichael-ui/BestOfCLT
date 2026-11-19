@@ -22,7 +22,7 @@ beforeEach(async () => {
 });
 
 describe("nominate", () => {
-  it("creates a pending entrant with one upvote", async () => {
+  it("creates an approved entrant with one upvote", async () => {
     const v = await voter("a");
     const r = await nom(v, "@Pizza.Joint");
     expect(r.kind).toBe("created_pending");
@@ -30,12 +30,12 @@ describe("nominate", () => {
       `select ig_handle, status, upvote_count from entrants where tournament_id = $1`,
       [tid],
     );
-    expect(e).toMatchObject({ ig_handle: "pizza.joint", status: "pending", upvote_count: 1 });
+    expect(e).toMatchObject({ ig_handle: "pizza.joint", status: "approved", upvote_count: 1 });
     const [c] = await db.query<{ n: number }>(`select count(*)::int as n from upvotes`);
     expect(c.n).toBe(1);
-    // Pending is not public.
+    // Added places show on the list right away.
     const list = await listEntrants("p", v);
-    expect(list.kind === "ok" && list.entrants).toEqual([]);
+    expect(list.kind === "ok" && list.entrants.map((e) => e.igHandle)).toEqual(["pizza.joint"]);
   });
 
   it("nominating an existing handle upvotes it, and repeats do not double count", async () => {
