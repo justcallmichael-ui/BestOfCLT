@@ -433,7 +433,7 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
         </div>
         {st.sub ? <div style={{ display: "flex", marginTop: 10, fontSize: 34, color: p.muted }}>{st.sub}</div> : null}
         <div style={{ display: "flex", marginTop: 70, fontSize: 52, color: p.accent }}>
-          {`Vote at ${brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "")}`}
+          {`Vote at ${brand.siteUrl.replace(/^https?:\/\//, "").replace(/\/.*$/, "").replace(/^www\./, "")}`}
         </div>
       </div>
     </Frame>
