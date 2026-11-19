@@ -9,6 +9,7 @@ import {
   type NominateResult,
 } from "@/lib/client/api";
 import { instagramUrl, useTournament } from "@/lib/client/hooks";
+import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
 const RESULT_TEXT: Record<NominateResult, { text: string; good: boolean }> = {
@@ -23,7 +24,7 @@ const RESULT_TEXT: Record<NominateResult, { text: string; good: boolean }> = {
   },
 };
 
-export function NominatePanel({ slug }: { slug: string }) {
+export function NominatePanel({ slug, embedded = false }: { slug: string; embedded?: boolean }) {
   const { data: tState } = useTournament(slug);
   const [entrants, setEntrants] = useState<EntrantRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -128,18 +129,22 @@ export function NominatePanel({ slug }: { slug: string }) {
   }
 
   return (
-    <div className="mx-auto w-full max-w-xl px-4 py-6">
-      <h1 className="display text-4xl">Nominate</h1>
-      <p className="mt-3 text-lg text-muted">
-        Local Charlotte area {category} places only. No national chains.
-      </p>
+    <div className={embedded ? "w-full" : "mx-auto w-full max-w-xl px-4 py-6"}>
+      {embedded ? null : (
+        <>
+          <h1 className="display text-4xl">Nominate</h1>
+          <p className="mt-3 text-lg text-muted">
+            Local Charlotte area {category} places only. No national chains.
+          </p>
+        </>
+      )}
       {closed ? (
         <p role="status" className="mt-4 rounded-xl border-2 border-accent bg-panel px-4 py-3">
           Nominations are closed. You can still browse the list.
         </p>
       ) : null}
 
-      <section aria-labelledby="list-h" className="mt-8">
+      <section aria-labelledby="list-h" className={embedded ? "" : "mt-8"}>
         <h2 id="list-h" className="display text-3xl">
           The list
         </h2>
@@ -179,6 +184,7 @@ export function NominatePanel({ slug }: { slug: string }) {
             <ol className="flex flex-col gap-2">
               {filtered.map((row) => (
                 <li key={row.id} className="panel flex min-h-14 items-center gap-3 p-2.5">
+                  <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <a
                       href={instagramUrl(row.igHandle)}
