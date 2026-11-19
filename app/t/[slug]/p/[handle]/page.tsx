@@ -7,7 +7,7 @@ import { SharePageButton } from "@/components/share/SharePageButton";
 import { StoryButton } from "@/components/share/StoryButton";
 import { advanceDueRounds } from "@/lib/services/bracket";
 import {
-  entrantPageUrl,
+  shortEntrantUrl,
   fmtClock,
   fmtDayShort,
   getEntrantShareByHandle,
@@ -47,7 +47,7 @@ export default async function EntrantPage({ params }: Props) {
   const { entrant, current, results, tournament } = v;
   const open = current?.matchup.status === "open";
   const opp = current?.opponent ?? null;
-  const pageUrl = entrantPageUrl(tournament.slug, entrant.igHandle);
+  const pageUrl = shortEntrantUrl(entrant.igHandle);
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-6">
