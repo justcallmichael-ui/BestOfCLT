@@ -73,6 +73,15 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
     );
   }, [entrants, query]);
 
+  // The place named in the link, shown only after the list has loaded on the client.
+  const focus =
+    entrants && typeof window !== "undefined"
+      ? (/^#place-(.+)$/.exec(decodeURIComponent(window.location.hash))?.[1] ?? null)
+      : null;
+  useEffect(() => {
+    if (focus) document.getElementById(`place-${focus}`)?.scrollIntoView({ block: "center" });
+  }, [focus]);
+
   const [shareRow, setShareRow] = useState<EntrantRow | null>(null);
   const votesLeft = Math.max(0, VOTES_PER_VOTER - (entrants?.filter((e) => e.upvotedByMe).length ?? 0));
 
@@ -208,7 +217,11 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
           ) : (
             <ol className="flex flex-col gap-2">
               {filtered.map((row) => (
-                <li key={row.id} className="panel flex min-h-14 items-center gap-3 border-2 border-accent p-2.5">
+                <li
+                  key={row.id}
+                  id={`place-${row.igHandle}`}
+                  className={`panel flex min-h-14 scroll-mt-24 items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
+                >
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <Link
