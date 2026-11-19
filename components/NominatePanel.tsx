@@ -10,6 +10,7 @@ import {
 } from "@/lib/client/api";
 import { instagramUrl, useTournament } from "@/lib/client/hooks";
 import Link from "next/link";
+import { StoryButton } from "./share/StoryButton";
 import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
@@ -70,6 +71,8 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
     );
   }, [entrants, query]);
 
+  const [shareRow, setShareRow] = useState<EntrantRow | null>(null);
+
   async function upvote(row: EntrantRow) {
     if (row.upvotedByMe || pending.has(row.id) || closed) return;
     setRowNotice(null);
@@ -82,6 +85,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
       setEntrants((list) =>
         list?.map((e) => (e.id === row.id ? { ...e, upvotedByMe: true, upvoteCount: r.upvoteCount } : e)) ?? list,
       );
+      setShareRow(row);
     } catch (e) {
       setEntrants((list) => list?.map((x) => (x.id === row.id ? row : x)) ?? list);
       setRowNotice(
@@ -149,6 +153,18 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
         <h2 id="list-h" className="display text-3xl">
           The list
         </h2>
+        {shareRow ? (
+          <div className="panel mt-3 flex flex-col gap-2 p-4">
+            <p className="font-bold">You upvoted {shareRow.displayName}. Tell your followers.</p>
+            <StoryButton
+              entrantId={shareRow.id}
+              handle={shareRow.igHandle}
+              url={`/t/${encodeURIComponent(slug)}/p/${encodeURIComponent(shareRow.igHandle)}`}
+              title={`Vote for ${shareRow.displayName}`}
+              label="Share on your story"
+            />
+          </div>
+        ) : null}
         <label htmlFor="search" className="sr-only">
           Search places
         </label>
