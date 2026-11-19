@@ -9,6 +9,7 @@ import {
   type NominateResult,
 } from "@/lib/client/api";
 import { instagramUrl, useTournament } from "@/lib/client/hooks";
+import { VOTES_PER_VOTER } from "@/lib/config";
 import Link from "next/link";
 import { StoryButton } from "./share/StoryButton";
 import { PlaceLogo } from "./PlaceLogo";
@@ -18,6 +19,7 @@ const RESULT_TEXT: Record<NominateResult, { text: string; good: boolean }> = {
   created_pending: { text: "Added. It is on the list now.", good: true },
   upvoted: { text: "That place is already on the list. We added your upvote.", good: true },
   already_upvoted: { text: "You already upvoted that place.", good: true },
+  no_votes_left: { text: "You are out of votes. You get " + VOTES_PER_VOTER + " during nominations.", good: false },
   rejected: { text: "That place cannot be added to this tournament.", good: false },
   closed: { text: "Nominations are closed.", good: false },
   invalid_handle: {
@@ -72,6 +74,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
   }, [entrants, query]);
 
   const [shareRow, setShareRow] = useState<EntrantRow | null>(null);
+  const votesLeft = Math.max(0, VOTES_PER_VOTER - (entrants?.filter((e) => e.upvotedByMe).length ?? 0));
 
   async function upvote(row: EntrantRow) {
     if (row.upvotedByMe || pending.has(row.id) || closed) return;
@@ -93,7 +96,9 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
           ? "Too many upvotes from your connection. Try again a little later."
           : e instanceof ApiError && e.status === 409
             ? "Nominations are closed."
-            : "Your upvote did not go through. Try again.",
+            : e instanceof ApiError && e.status === 422
+              ? "You are out of votes. You get " + VOTES_PER_VOTER + " during nominations."
+              : "Your upvote did not go through. Try again.",
       );
     } finally {
       setPending((p) => {
@@ -153,6 +158,9 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
         <h2 id="list-h" className="display text-3xl">
           The list
         </h2>
+        <p className="mt-2 font-bold" aria-live="polite">
+          You have {votesLeft} of {VOTES_PER_VOTER} votes left. Pick your favorites.
+        </p>
         {shareRow ? (
           <div className="panel mt-3 flex flex-col gap-2 p-4">
             <p className="font-bold">You upvoted {shareRow.displayName}. Tell your followers.</p>
@@ -223,13 +231,13 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                   <button
                     type="button"
                     onClick={() => void upvote(row)}
-                    disabled={row.upvotedByMe || closed || pending.has(row.id)}
+                    disabled={row.upvotedByMe || closed || pending.has(row.id) || votesLeft === 0}
                     aria-label={
                       row.upvotedByMe
                         ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes`
                         : `Upvote ${row.displayName}. ${row.upvoteCount} upvotes so far`
                     }
-                    className={`btn min-w-20 flex-col gap-1 ${row.upvotedByMe ? "btn-ghost" : "btn-primary"}`}
+                    className={`btn min-w-20 flex-col gap-1 ${row.upvotedByMe || votesLeft === 0 ? "btn-ghost" : "btn-primary"}`}
                   >
                     <span className="flex items-center gap-1.5">
                       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
