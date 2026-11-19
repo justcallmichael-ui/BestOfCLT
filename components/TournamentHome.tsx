@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { MatchupCard, TournamentState } from "@/lib/client/api";
 import { useRefreshAt, useTournament, instagramUrl } from "@/lib/client/hooks";
 import { MatchupCardView } from "./MatchupCardView";
+import { NominatePanel } from "./NominatePanel";
 import { Countdown } from "./Countdown";
 import { ScoresNote } from "./ScoresNote";
 import { ErrorBlock, LoadingBlock } from "./Status";
@@ -36,37 +37,29 @@ export function TournamentHome({ slug }: { slug: string }) {
             <p className="display inline-block rounded-md bg-accent px-2 py-1 text-base text-accent-ink">
               {data.tournament.category}
             </p>
-            <h1 className="display mt-3 text-5xl sm:text-6xl">{data.tournament.name}</h1>
+            <h1 className="display mt-2 text-3xl sm:text-5xl">{data.tournament.name}</h1>
           </div>
 
           {data.tournament.status === "nominations" ? (
-            <section className="panel flex flex-col gap-5 p-5" aria-labelledby="phase">
-              <h2 id="phase" className="display text-3xl">
-                Nominate your favorites
-              </h2>
-              <p className="text-lg text-muted">
-                Add the places you think belong in the bracket and upvote the ones already on the list. The top{" "}
-                {data.tournament.fieldSize} by upvotes get a seed.
-              </p>
-              {data.tournament.nominationsCloseAt ? (
-                <Countdown
-                  to={data.tournament.nominationsCloseAt}
-                  label="Nominations close in"
-                  doneText="Nominations are closing"
-                />
-              ) : null}
-              <ul className="flex flex-col gap-1 text-lg">
-                <li>Nominate your favorite local pizza place.</li>
-                <li>The top 64 make the bracket.</li>
-                <li>Vote every day until one is champion.</li>
-              </ul>
-              <Link href={`${base}/nominate`} className="btn btn-primary">
-                Nominate and upvote
-              </Link>
+            <>
+              <div className="flex flex-col gap-3">
+                <p className="text-base text-muted">
+                  Upvote your favorites or add a place that is missing. The top {data.tournament.fieldSize} by upvotes
+                  make the bracket.
+                </p>
+                {data.tournament.nominationsCloseAt ? (
+                  <Countdown
+                    to={data.tournament.nominationsCloseAt}
+                    label="Nominations close in"
+                    doneText="Nominations are closing"
+                  />
+                ) : null}
+              </div>
+              <NominatePanel slug={slug} embedded />
               <Link href={`${base}/how-it-works`} className="btn btn-ghost">
                 How it works
               </Link>
-            </section>
+            </>
           ) : data.tournament.status === "bracket" ? (
             <>
               <BracketPhase data={data} base={base} />
