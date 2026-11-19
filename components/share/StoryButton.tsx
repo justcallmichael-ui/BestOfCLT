@@ -7,7 +7,7 @@ import { copyText } from "./CopyButton";
  * Owner button. On a phone it opens the share sheet with the story graphic, so Instagram
  * (Story) is one tap. On a computer it saves the graphic to add to a story from the phone.
  */
-export function StoryButton({ entrantId, handle, url, title, label = "Add to your Instagram story" }: { entrantId: string; handle: string; url: string; title: string; label?: string }) {
+export function StoryButton({ entrantId, handle, url, title, label = "Add to your Instagram story", compact = false }: { entrantId: string; handle: string; url: string; title: string; label?: string; compact?: boolean }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -61,6 +61,22 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
       ok
         ? "Link copied. Now open your story, tap the sticker button, pick Link, paste it, and set the text to Vote for us."
         : "Could not copy the link. Press and hold the page address to copy it.",
+    );
+  }
+
+  if (compact) {
+    return (
+      <span className="flex flex-col items-center gap-1">
+        <button
+          type="button"
+          onClick={onClick}
+          disabled={busy}
+          className="inline-flex min-h-9 items-center px-2 text-sm font-bold text-black underline underline-offset-4"
+        >
+          {busy ? "Getting it ready..." : label}
+        </button>
+        {msg ? <span aria-live="polite" className="text-center text-xs text-black">{msg}</span> : null}
+      </span>
     );
   }
 
