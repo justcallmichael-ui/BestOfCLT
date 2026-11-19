@@ -7,7 +7,6 @@ import { useTournament } from "@/lib/client/hooks";
 import { brand } from "@/lib/config";
 import { formatWhen } from "@/lib/client/time";
 import { Countdown } from "./Countdown";
-import { FollowCard } from "./FollowCard";
 import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
@@ -38,7 +37,6 @@ export function VoteScreen({ slug }: { slug: string }) {
   const [split, setSplit] = useState<{ a: number; b: number } | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
   const [loadError, setLoadError] = useState<string | null>(null);
-  const [doneFollowDismissed, setDoneFollowDismissed] = useState(false);
   const [firstTry, setFirstTry] = useState(0);
   const [drag, setDrag] = useState(0);
   const [dragging, setDragging] = useState(false);
@@ -271,7 +269,6 @@ export function VoteScreen({ slug }: { slug: string }) {
               </Link>
             </section>
           )}
-          {!doneFollowDismissed ? <FollowCard onDismiss={() => setDoneFollowDismissed(true)} /> : null}
         </div>
       </Shell>
     );
