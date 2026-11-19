@@ -4,6 +4,7 @@ import Link from "next/link";
 import { cache } from "react";
 import { brand } from "@/lib/config";
 import { SharePageButton } from "@/components/share/SharePageButton";
+import { StoryButton } from "@/components/share/StoryButton";
 import { advanceDueRounds } from "@/lib/services/bracket";
 import {
   entrantPageUrl,
@@ -125,6 +126,7 @@ export default async function EntrantPage({ params }: Props) {
         )}
 
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start">
+          <StoryButton entrantId={entrant.id} handle={entrant.igHandle} url={pageUrl} title={`Vote for ${entrant.displayName}`} />
           <SharePageButton url={pageUrl} title={`Vote for ${entrant.displayName}`} />
           <a
             href={`/api/og/entrant?id=${entrant.id}`}
