@@ -47,13 +47,6 @@ export function TournamentHome({ slug }: { slug: string }) {
                   Upvote your favorites or add a place that is missing. The top {data.tournament.fieldSize} by upvotes
                   make the bracket.
                 </p>
-                {data.tournament.nominationsCloseAt ? (
-                  <Countdown
-                    to={data.tournament.nominationsCloseAt}
-                    label="Voting starts in"
-                    doneText="Nominations are closing. Voting starts soon."
-                  />
-                ) : null}
               </div>
               <Link href={`${base}/how-it-works`} className="btn btn-ghost">
                 How it works
