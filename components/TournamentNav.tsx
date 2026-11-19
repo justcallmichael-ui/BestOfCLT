@@ -19,6 +19,7 @@ export function TournamentNav({ slug, initialStatus }: { slug: string; initialSt
     ...(showNominate || pending ? [{ href: `${base}/nominate`, label: "Nominate", hidden: pending }] : []),
     { href: `${base}/vote`, label: "Vote", hidden: false },
     { href: `${base}/bracket`, label: "Bracket", hidden: false },
+    { href: `${base}/how-it-works`, label: "How it works", hidden: false },
   ];
   return (
     <nav
@@ -34,7 +35,7 @@ export function TournamentNav({ slug, initialStatus }: { slug: string; initialSt
                 href={item.href}
                 tabIndex={item.hidden ? -1 : undefined}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-11 items-center justify-center rounded-full text-[0.95rem] font-bold md:px-6 ${
+                className={`flex min-h-11 items-center justify-center whitespace-nowrap rounded-full text-[0.78rem] font-bold sm:text-[0.95rem] md:px-6 ${
                   active ? "bg-accent text-white" : "text-muted hover:bg-panel-2"
                 } ${item.hidden ? "invisible" : ""
                 }`}
