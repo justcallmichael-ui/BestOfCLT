@@ -5,6 +5,7 @@ import { cache } from "react";
 import { brand } from "@/lib/config";
 import { SharePageButton } from "@/components/share/SharePageButton";
 import { StoryButton } from "@/components/share/StoryButton";
+import { GoToList } from "@/components/GoToList";
 import { advanceDueRounds } from "@/lib/services/bracket";
 import {
   shortEntrantUrl,
@@ -51,6 +52,7 @@ export default async function EntrantPage({ params }: Props) {
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-6">
+      {tournament.status === "nominations" ? <GoToList slug={tournament.slug} handle={entrant.igHandle} /> : null}
       <div className="flex flex-col gap-6">
         <div>
           <p className="display inline-block rounded-md bg-accent px-2 py-1 text-base text-accent-ink">
