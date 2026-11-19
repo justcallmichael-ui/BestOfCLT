@@ -6,7 +6,7 @@ import { useState } from "react";
  * Owner button. On a phone it opens the share sheet with the story graphic, so Instagram
  * (Story) is one tap. On a computer it saves the graphic to add to a story from the phone.
  */
-export function StoryButton({ entrantId, handle, url, title }: { entrantId: string; handle: string; url: string; title: string }) {
+export function StoryButton({ entrantId, handle, url, title, label = "Add to your Instagram story" }: { entrantId: string; handle: string; url: string; title: string; label?: string }) {
   const [msg, setMsg] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -21,7 +21,7 @@ export function StoryButton({ entrantId, handle, url, title }: { entrantId: stri
       const file = new File([blob], `vote-for-${handle}.png`, { type: "image/png" });
       if (typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title, url });
+          await navigator.share({ files: [file], title, url: new URL(url, window.location.origin).toString() });
           return;
         } catch (e) {
           if (e instanceof DOMException && e.name === "AbortError") return;
@@ -44,7 +44,7 @@ export function StoryButton({ entrantId, handle, url, title }: { entrantId: stri
   return (
     <span className="inline-flex flex-col gap-1">
       <button type="button" onClick={onClick} disabled={busy} className="btn btn-primary">
-        {busy ? "Getting it ready..." : "Add to your Instagram story"}
+        {busy ? "Getting it ready..." : label}
       </button>
       <span aria-live="polite" className="min-h-5 text-sm text-muted">
         {msg}
