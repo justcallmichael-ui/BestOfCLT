@@ -1,4 +1,3 @@
-import { StartBanner } from "@/components/StartBanner";
 import { TournamentNav } from "@/components/TournamentNav";
 import { getDb } from "@/lib/db";
 
@@ -26,7 +25,6 @@ export default async function TournamentLayout({
   const status = await phaseOf(slug);
   return (
     <>
-      <StartBanner slug={slug} />
       <TournamentNav slug={slug} initialStatus={status} />
       {children}
     </>
