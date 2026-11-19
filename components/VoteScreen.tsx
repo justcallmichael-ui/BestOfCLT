@@ -8,6 +8,7 @@ import { brand } from "@/lib/config";
 import { formatWhen } from "@/lib/client/time";
 import { Countdown } from "./Countdown";
 import { FollowCard } from "./FollowCard";
+import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
 type Choice = "a" | "b";
@@ -468,6 +469,9 @@ function VoteCard({
             ...
           </span>
         ) : null}
+        <span className="mb-3 block">
+          <PlaceLogo handle={entrant.igHandle} name={entrant.displayName} size={72} />
+        </span>
         <span className="display block text-balance break-words text-3xl sm:text-4xl">{entrant.displayName}</span>
         <span className="mt-1 block break-all text-base text-muted">@{entrant.igHandle}</span>
         <span className="sr-only">{side === "a" ? "Left option" : "Right option"}</span>
