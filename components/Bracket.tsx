@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, errorMessage, type BracketMatchup, type BracketRound, type Entrant } from "@/lib/client/api";
 import { prefersReducedMotion, useRefreshAt, useScoresRefresh } from "@/lib/client/hooks";
 import { formatScore, formatWhen } from "@/lib/client/time";
+import { PlaceLogo } from "./PlaceLogo";
 import { ScoresNote } from "./ScoresNote";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
@@ -240,6 +241,7 @@ function Slot({ e, votes, winner, lost }: { e: Entrant | null; votes: string | n
       }`}
     >
       <span className={`display w-6 shrink-0 text-center text-base ${winner ? "" : "text-accent"}`}>{e.seed ?? ""}</span>
+      <PlaceLogo handle={e.igHandle} name={e.displayName} size={24} />
       <span className="min-w-0 flex-1">
         <span className={`block truncate leading-tight ${winner ? "text-base font-extrabold" : "text-sm font-semibold"} ${lost ? "line-through decoration-1" : ""}`}>
           {e.displayName}
