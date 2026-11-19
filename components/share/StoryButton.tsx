@@ -14,6 +14,18 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
     if (busy) return;
     setBusy(true);
     setMsg(null);
+    const link = new URL(url, window.location.origin).toString();
+    // Copy first, while the tap still counts. Instagram needs the link added by hand as a sticker.
+    let copied = false;
+    try {
+      await navigator.clipboard.writeText(link);
+      copied = true;
+    } catch {
+      copied = false;
+    }
+    const steps = copied
+      ? "Link copied. In your story tap the sticker button, pick Link, and paste it."
+      : "In your story tap the sticker button, pick Link, and add this page's link.";
     try {
       const res = await fetch(`/api/og/entrant?id=${encodeURIComponent(entrantId)}`);
       if (!res.ok) throw new Error("graphic");
@@ -21,7 +33,8 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
       const file = new File([blob], `vote-for-${handle}.png`, { type: "image/png" });
       if (typeof navigator.canShare === "function" && navigator.canShare({ files: [file] })) {
         try {
-          await navigator.share({ files: [file], title, url: new URL(url, window.location.origin).toString() });
+          await navigator.share({ files: [file], title, url: link });
+          setMsg(steps);
           return;
         } catch (e) {
           if (e instanceof DOMException && e.name === "AbortError") return;
@@ -33,7 +46,7 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
       document.body.appendChild(a);
       a.click();
       a.remove();
-      setMsg("Saved. Open Instagram, start a story and add this picture.");
+      setMsg(`Saved. Open Instagram, start a story and add this picture. ${steps}`);
     } catch {
       setMsg("Could not make the graphic. Try again.");
     } finally {
@@ -46,8 +59,8 @@ export function StoryButton({ entrantId, handle, url, title, label = "Add to you
       <button type="button" onClick={onClick} disabled={busy} className="btn btn-primary">
         {busy ? "Getting it ready..." : label}
       </button>
-      <span aria-live="polite" className="min-h-5 text-sm text-muted">
-        {msg}
+      <span aria-live="polite" className="max-w-xs text-sm text-muted">
+        {msg ?? "We copy the link for you. In your story, tap the sticker button, pick Link and paste it."}
       </span>
     </span>
   );
