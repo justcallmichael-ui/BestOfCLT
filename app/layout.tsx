@@ -8,6 +8,7 @@ const description = `Vote head to head for the best local spots in Charlotte. Pr
 
 export const metadata: Metadata = {
   metadataBase: new URL(brand.siteUrl),
+  icons: { icon: "/logo.png", apple: "/logo.png" },
   title: {
     default: `${brand.name}: the Charlotte bracket`,
     template: `%s | ${brand.name}`,
@@ -29,7 +30,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
-  themeColor: "#0a0a0c",
+  themeColor: "#f7f2ea",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -49,8 +50,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 href="/"
                 className="display flex min-h-12 items-center gap-2 text-2xl text-chalk"
               >
-                <span aria-hidden="true" className="inline-block h-5 w-5 -skew-x-12 bg-accent" />
-                {brand.name}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/logo.png" alt={brand.name} width={44} height={40} className="h-10 w-auto" />
               </Link>
             </div>
           </header>
