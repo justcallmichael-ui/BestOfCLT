@@ -215,11 +215,12 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                 : "No match. Add it below if it is missing."}
             </p>
           ) : (
-            <ol className="flex flex-col gap-2">
-              {filtered.map((row) => (
+            <ol className="flex flex-col gap-3">
+              {filtered.map((row, i) => (
                 <li
                   key={row.id}
                   id={`place-${row.igHandle}`}
+                  style={{ background: i % 2 === 0 ? "#fde6e3" : "#fffdf8", border: "2px solid #f82d26" }}
                   className={`panel flex min-h-14 scroll-mt-24 flex-wrap items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
                 >
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
