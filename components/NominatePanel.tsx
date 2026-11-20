@@ -64,11 +64,16 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
     };
   }, [slug, tick]);
 
+  // Numbered by position, 1 is the most upvoted, so the last number is the total.
+  const rankOf = (row: EntrantRow) =>
+    1 + ([...(entrants ?? [])].sort((x, y) => y.upvoteCount - x.upvoteCount).findIndex((e) => e.id === row.id));
+
   const filtered = useMemo(() => {
     if (!entrants) return [];
+    const sorted = [...entrants].sort((a, b) => b.upvoteCount - a.upvoteCount);
     const q = query.trim().toLowerCase().replace(/^@/, "");
-    if (!q) return entrants;
-    return entrants.filter(
+    if (!q) return sorted;
+    return sorted.filter(
       (e) => e.displayName.toLowerCase().includes(q) || e.igHandle.toLowerCase().includes(q),
     );
   }, [entrants, query]);
@@ -165,7 +170,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
 
       <section aria-labelledby="list-h" className={embedded ? "" : "mt-8"}>
         <h2 id="list-h" className="display text-3xl">
-          The list
+          The list{entrants ? ` · ${entrants.length} places` : ""}
         </h2>
         <p className="mt-2 font-bold" aria-live="polite">
           You have {votesLeft} of {VOTES_PER_VOTER} votes left. Pick your favorites.
@@ -221,8 +226,14 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                   key={row.id}
                   id={`place-${row.igHandle}`}
                   style={{ border: "2px solid #f82d26" }}
-                  className={`panel flex min-h-14 scroll-mt-24 flex-wrap items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
+                  className={`panel relative flex min-h-14 scroll-mt-24 flex-wrap items-center gap-3 border-2 border-accent p-2.5 ${focus === row.igHandle ? "outline outline-4 outline-offset-2 outline-accent" : ""}`}
                 >
+                  <span
+                    aria-label={`Rank ${rankOf(row)}`}
+                    className="absolute -left-2 -top-2 flex h-6 min-w-6 items-center justify-center rounded-full bg-black px-1 text-xs font-bold text-white"
+                  >
+                    {rankOf(row)}
+                  </span>
                   <PlaceLogo handle={row.igHandle} name={row.displayName} size={44} />
                   <div className="min-w-0 flex-1">
                     <Link
