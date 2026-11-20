@@ -28,7 +28,7 @@ export function TournamentNav({ slug, initialStatus }: { slug: string; initialSt
     >
       <ul className="mx-auto flex w-full max-w-5xl gap-1 p-1.5 md:justify-center md:gap-2 md:p-2">
         {items.map((item) => {
-          const active = pathname === item.href;
+          const active = pathname === item.href || (item.href === base && pathname === "/");
           return (
             <li key={item.href} className="flex-1" aria-hidden={item.hidden || undefined}>
               <Link
