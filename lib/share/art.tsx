@@ -2,6 +2,7 @@
    must be display:flex, and only the default bundled font is available. Colors come from `palette`. */
 import type { ReactElement, ReactNode } from "react";
 import { brand, palette as p } from "@/lib/config";
+import { atHandle } from "@/lib/handles";
 import type { PublicEntrant } from "@/lib/services/bracket";
 import {
   fmtClock,
@@ -96,7 +97,7 @@ function PlaceCard({
       <div style={{ display: "flex", flexDirection: "column", flexGrow: 1, flexShrink: 1, minWidth: 0 }}>
         <div style={{ display: "flex", fontSize: nameSize(name, nameBase), lineHeight: 1.05 }}>{name}</div>
         <div style={{ display: "flex", marginTop: 10, fontSize: handleSize, color: sub }}>
-          {e ? `@${e.igHandle}` : "Winner of an earlier game"}
+          {e ? atHandle(e.igHandle) : "Winner of an earlier game"}
         </div>
       </div>
       {votes != null ? (
@@ -229,7 +230,7 @@ function CompactSide({ e, align }: { e: PublicEntrant | null; align: "left" | "r
         {e && e.seed != null ? `${e.seed}  ${name}` : name}
       </div>
       <div style={{ display: "flex", fontSize: 28, color: p.muted, marginTop: 4 }}>
-        {e ? `@${e.igHandle}` : "to be decided"}
+        {e ? atHandle(e.igHandle) : "to be decided"}
       </div>
     </div>
   );
@@ -359,7 +360,7 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
           {name}
         </div>
         <div style={{ display: "flex", marginTop: 14, fontSize: 38, color: p.muted }}>
-          {`@${v.entrant.igHandle}${v.entrant.seed != null ? `  ·  Seed ${v.entrant.seed}` : ""}`}
+          {`${atHandle(v.entrant.igHandle)}${v.entrant.seed != null ? `${v.entrant.igHandle.startsWith("noig-") ? "" : "  ·  "}Seed ${v.entrant.seed}` : ""}`}
         </div>
         <div
           style={{
@@ -399,7 +400,7 @@ export function EntrantArt({ v, format }: { v: EntrantShare; format: "story" | "
           {name}
         </div>
         <div style={{ display: "flex", marginTop: 24, fontSize: 40, color: p.muted }}>
-          {`@${v.entrant.igHandle}${v.entrant.seed != null ? `  ·  Seed ${v.entrant.seed}` : ""}`}
+          {`${atHandle(v.entrant.igHandle)}${v.entrant.seed != null ? `${v.entrant.igHandle.startsWith("noig-") ? "" : "  ·  "}Seed ${v.entrant.seed}` : ""}`}
         </div>
       </div>
       <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginTop: 60 }}>
