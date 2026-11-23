@@ -105,6 +105,11 @@ export function TournamentHome({ slug }: { slug: string }) {
               <p className="text-lg text-muted">This tournament is not open yet. Check back soon.</p>
             </section>
           )}
+          {data.totalVotes ? (
+            <p className="pt-2 text-center text-base font-bold" aria-live="polite">
+              {data.totalVotes.toLocaleString("en-US")} {data.totalVotes === 1 ? "vote" : "votes"} cast in this contest so far
+            </p>
+          ) : null}
         </div>
       )}
     </div>
