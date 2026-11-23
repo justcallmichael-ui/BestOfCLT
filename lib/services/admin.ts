@@ -2,6 +2,7 @@ import { getDb, type Db } from "@/lib/db";
 import { AdminError } from "@/lib/admin-auth";
 import { normalizeHandle } from "@/lib/handles";
 import { closeMatchupNow, lockSeedingAndStart, refreshRounds } from "@/lib/services/bracket";
+import { nextNoonEastern } from "@/lib/services/schedule";
 
 export type EntrantStatus = "pending" | "approved" | "rejected" | "withdrawn";
 
@@ -144,7 +145,18 @@ export async function updateTournament(input: UpdateTournamentInput): Promise<vo
       }
       add("round_days", input.roundDays);
     }
-    if (input.nominationsCloseAt !== undefined) add("nominations_close_at", input.nominationsCloseAt);
+    if (input.nominationsCloseAt !== undefined) {
+      if (t.status !== "draft" && t.status !== "nominations") {
+        throw new AdminError("Nominations are already closed. The close time can no longer be changed.", 409);
+      }
+      if (input.nominationsCloseAt !== null) {
+        if (Number.isNaN(input.nominationsCloseAt.getTime())) throw new AdminError("Invalid close time");
+        if (input.nominationsCloseAt.getTime() <= Date.now()) {
+          throw new AdminError("That time is in the past. Pick a time in the future, or press Clear.");
+        }
+      }
+      add("nominations_close_at", input.nominationsCloseAt);
+    }
     if (!sets.length) return;
     params.push(input.id);
     await db.query(`update tournaments set ${sets.join(", ")} where id = $${params.length}`, params);
@@ -176,12 +188,50 @@ export async function startBracket(id: string, now: Date = new Date(), startAt?:
   const db = getDb();
   const t = await mustGetTournament(db, id);
   if (t.status !== "nominations") throw new AdminError("Nominations must be open before the bracket can start", 409);
+  // Game day one can never open before nominations close.
+  const closeAt = t.nominations_close_at ? new Date(t.nominations_close_at) : null;
+  const closeInFuture = !!closeAt && closeAt.getTime() > now.getTime();
+  if (startAt && closeInFuture && startAt.getTime() < closeAt!.getTime()) {
+    throw new AdminError("The first game day cannot open before nominations close. Pick a time after the close time.");
+  }
+  if (!startAt && closeInFuture) startAt = nextNoonEastern(closeAt!);
   try {
     await lockSeedingAndStart(id, now, startAt);
   } catch (e) {
     throw new AdminError(e instanceof Error ? e.message : "Could not start the bracket", 409);
   }
   await audit(db, "tournament.start_bracket", { id, slug: t.slug, startAt: startAt?.toISOString() ?? null });
+}
+
+/**
+ * Pushes every game that has not finished back by a number of hours. Open games stay open and get more time,
+ * games that have not opened yet open later. Finished games are left alone.
+ */
+export async function delaySchedule(tournamentId: string, hours: number): Promise<void> {
+  if (!Number.isInteger(hours) || hours < 1 || hours > 24 * 14) {
+    throw new AdminError("Delay must be a whole number of hours, from 1 to 336");
+  }
+  await getDb().tx(async (db) => {
+    const t = await mustGetTournament(db, tournamentId);
+    if (t.status !== "bracket") throw new AdminError("There are no running games to delay", 409);
+    const moved = await db.query<{ id: string }>(
+      `update matchups m
+       set opens_at = m.opens_at + make_interval(hours => $2::int),
+           closes_at = m.closes_at + make_interval(hours => $2::int)
+       from rounds r
+       where r.id = m.round_id and r.tournament_id = $1 and m.status <> 'closed'
+       returning m.id`,
+      [tournamentId, hours],
+    );
+    await db.query(
+      `update rounds
+       set closes_at = closes_at + make_interval(hours => $2::int),
+           opens_at = case when status = 'scheduled' then opens_at + make_interval(hours => $2::int) else opens_at end
+       where tournament_id = $1 and status <> 'closed'`,
+      [tournamentId, hours],
+    );
+    await audit(db, "schedule.delay", { tournamentId, hours, games: moved.length });
+  });
 }
 
 // ---------- Entrants ----------
