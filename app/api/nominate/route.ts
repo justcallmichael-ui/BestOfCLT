@@ -4,8 +4,9 @@ import { nominate } from "@/lib/services/nominations";
 
 const body = z.object({
   slug: z.string().min(1).max(100),
-  handle: z.string().min(1).max(200),
+  handle: z.string().max(200).default(""),
   displayName: z.string().max(200).optional(),
+  noInstagram: z.boolean().optional(),
 });
 
 export async function POST(req: Request) {
