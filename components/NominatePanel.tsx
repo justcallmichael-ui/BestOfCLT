@@ -9,6 +9,7 @@ import {
   type NominateResult,
 } from "@/lib/client/api";
 import { instagramUrl, useTournament } from "@/lib/client/hooks";
+import { isNoIg } from "@/lib/handles";
 import { VOTES_PER_VOTER } from "@/lib/config";
 import Link from "next/link";
 import { StoryButton } from "./share/StoryButton";
@@ -37,6 +38,8 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
   const [pending, setPending] = useState<Set<string>>(new Set());
 
   const [handle, setHandle] = useState("");
+  const [noIg, setNoIg] = useState(false);
+  const [placeName, setPlaceName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formResult, setFormResult] = useState<{ text: string; good: boolean } | null>(null);
 
@@ -152,15 +155,16 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
 
   async function submit(ev: React.FormEvent) {
     ev.preventDefault();
-    if (submitting || !handle.trim()) return;
+    if (submitting || (noIg ? !placeName.trim() : !handle.trim())) return;
     setSubmitting(true);
     setFormResult(null);
     try {
-      const r = await api.nominate(slug, handle.trim());
+      const r = await (noIg ? api.nominate(slug, "", placeName.trim(), true) : api.nominate(slug, handle.trim()));
       const msg = RESULT_TEXT[r.result] ?? { text: "Done.", good: true };
       setFormResult(msg);
       if (r.result === "created_pending" || r.result === "upvoted" || r.result === "already_upvoted") {
         setHandle("");
+        setPlaceName("");
       }
       if (r.result === "upvoted" || r.result === "created_pending") load();
     } catch (e) {
@@ -269,15 +273,17 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                     >
                       {row.displayName}
                     </Link>
-                    <a
-                      href={instagramUrl(row.igHandle)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label={`@${row.igHandle} on Instagram (opens in a new tab)`}
-                      className="block truncate text-sm text-muted underline decoration-line underline-offset-2 hover:text-chalk"
-                    >
-                      @{row.igHandle}
-                    </a>
+                    {isNoIg(row.igHandle) ? null : (
+                      <a
+                        href={instagramUrl(row.igHandle)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`@${row.igHandle} on Instagram (opens in a new tab)`}
+                        className="block truncate text-sm text-muted underline decoration-line underline-offset-2 hover:text-chalk"
+                      >
+                        @{row.igHandle}
+                      </a>
+                    )}
                   </div>
                   <button
                     type="button"
@@ -324,26 +330,51 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
           Paste its Instagram handle or profile link. Only local Charlotte area {category} spots, no national chains.
         </p>
         <form onSubmit={submit} className="mt-4 flex flex-col gap-4">
-          <div>
-            <label htmlFor="handle" className="mb-1 block font-semibold">
-              Instagram handle or profile link
-            </label>
-            <input
-              id="handle"
-              value={handle}
-              onChange={(e) => setHandle(e.target.value)}
-              placeholder="@name or instagram.com/name"
-              autoCapitalize="none"
-              autoCorrect="off"
-              spellCheck={false}
-              autoComplete="off"
-              inputMode="url"
-              required
-              className="field"
-            />
-          </div>
-          <button type="submit" className="btn btn-primary" disabled={submitting || closed || !handle.trim()}>
+          {noIg ? (
+            <div>
+              <label htmlFor="pname" className="mb-1 block font-semibold">
+                Place name
+              </label>
+              <input
+                id="pname"
+                value={placeName}
+                onChange={(e) => setPlaceName(e.target.value)}
+                placeholder="Name as people know it"
+                maxLength={80}
+                autoComplete="off"
+                required
+                className="field"
+              />
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="handle" className="mb-1 block font-semibold">
+                Instagram handle or profile link
+              </label>
+              <input
+                id="handle"
+                value={handle}
+                onChange={(e) => setHandle(e.target.value)}
+                placeholder="@name or instagram.com/name"
+                autoCapitalize="none"
+                autoCorrect="off"
+                spellCheck={false}
+                autoComplete="off"
+                inputMode="url"
+                required
+                className="field"
+              />
+            </div>
+          )}
+          <button type="submit" className="btn btn-primary" disabled={submitting || closed || (noIg ? !placeName.trim() : !handle.trim())}>
             {submitting ? "Adding..." : "Add this place"}
+          </button>
+          <button
+            type="button"
+            onClick={() => setNoIg((v) => !v)}
+            className="mx-auto text-xs text-muted underline underline-offset-2"
+          >
+            {noIg ? "Has Instagram? Add by handle" : "No Instagram? Add by name"}
           </button>
           <div aria-live="polite">
             {formResult ? (
