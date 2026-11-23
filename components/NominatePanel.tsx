@@ -90,6 +90,34 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
   const [shareRow, setShareRow] = useState<EntrantRow | null>(null);
   const votesLeft = Math.max(0, VOTES_PER_VOTER - (entrants?.filter((e) => e.upvotedByMe).length ?? 0));
 
+  async function unvote(row: EntrantRow) {
+    if (!row.upvotedByMe || pending.has(row.id) || closed) return;
+    setRowNotice(null);
+    setPending((p) => new Set(p).add(row.id));
+    setShareRow((s) => (s?.id === row.id ? null : s));
+    setEntrants((list) =>
+      list?.map((e) => (e.id === row.id ? { ...e, upvotedByMe: false, upvoteCount: Math.max(0, e.upvoteCount - 1) } : e)) ??
+      list,
+    );
+    try {
+      const r = await api.removeUpvote(row.id);
+      setEntrants((list) =>
+        list?.map((e) => (e.id === row.id ? { ...e, upvotedByMe: false, upvoteCount: r.upvoteCount } : e)) ?? list,
+      );
+    } catch (e) {
+      setEntrants((list) => list?.map((x) => (x.id === row.id ? row : x)) ?? list);
+      setRowNotice(
+        e instanceof ApiError && e.status === 409 ? "Nominations are closed." : "Could not take back your vote. Try again.",
+      );
+    } finally {
+      setPending((p) => {
+        const next = new Set(p);
+        next.delete(row.id);
+        return next;
+      });
+    }
+  }
+
   async function upvote(row: EntrantRow) {
     if (row.upvotedByMe || pending.has(row.id) || closed) return;
     setRowNotice(null);
@@ -255,12 +283,12 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                   </div>
                   <button
                     type="button"
-                    onClick={() => void upvote(row)}
-                    disabled={row.upvotedByMe || closed || pending.has(row.id) || votesLeft === 0}
+                    onClick={() => void (row.upvotedByMe ? unvote(row) : upvote(row))}
+                    disabled={closed || pending.has(row.id) || (!row.upvotedByMe && votesLeft === 0)}
                     style={row.upvotedByMe ? { background: "#16a34a", color: "#fff", borderColor: "#16a34a", opacity: 1 } : undefined}
                     aria-label={
                       row.upvotedByMe
-                        ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes`
+                        ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes. Tap to take it back`
                         : `Upvote ${row.displayName}. ${row.upvoteCount} upvotes so far`
                     }
                     className={`btn min-w-20 flex-col gap-1 ${row.upvotedByMe || votesLeft === 0 ? "btn-ghost" : "btn-primary"}`}
