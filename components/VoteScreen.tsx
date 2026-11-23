@@ -7,6 +7,7 @@ import { useTournament } from "@/lib/client/hooks";
 import { brand } from "@/lib/config";
 import { formatWhen } from "@/lib/client/time";
 import { Countdown } from "./Countdown";
+import { atHandle, isNoIg } from "@/lib/handles";
 import { PlaceLogo } from "./PlaceLogo";
 import { ErrorBlock, LoadingBlock } from "./Status";
 
@@ -423,7 +424,7 @@ function VoteCard({
     opacity = 0.55;
   }
   const highlighted = state === "lean" || state === "picked";
-  const label = `Vote for ${entrant.displayName}, @${entrant.igHandle}${entrant.seed ? `, seed ${entrant.seed}` : ""}`;
+  const label = `Vote for ${entrant.displayName}${isNoIg(entrant.igHandle) ? "" : `, ${atHandle(entrant.igHandle)}`}${entrant.seed ? `, seed ${entrant.seed}` : ""}`;
 
   return (
     <button
@@ -470,7 +471,7 @@ function VoteCard({
           <PlaceLogo handle={entrant.igHandle} name={entrant.displayName} size={72} />
         </span>
         <span className="display block text-balance break-words text-3xl sm:text-4xl">{entrant.displayName}</span>
-        <span className="mt-1 block break-all text-base text-muted">@{entrant.igHandle}</span>
+        <span className="mt-1 block break-all text-base text-muted">{atHandle(entrant.igHandle)}</span>
         <span className="sr-only">{side === "a" ? "Left option" : "Right option"}</span>
       </span>
     </button>
