@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { MatchupCard, TournamentState } from "@/lib/client/api";
 import { useRefreshAt, useTournament, instagramUrl } from "@/lib/client/hooks";
+import { isNoIg } from "@/lib/handles";
 import { MatchupCardView } from "./MatchupCardView";
 import { NominatePanel } from "./NominatePanel";
 import { Countdown } from "./Countdown";
@@ -79,14 +80,16 @@ export function TournamentHome({ slug }: { slug: string }) {
                 {data.champion ? (
                   <div>
                     <p className="display text-5xl">{data.champion.displayName}</p>
-                    <a
-                      href={instagramUrl(data.champion.igHandle)}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="mt-2 inline-flex min-h-12 items-center text-lg text-muted underline underline-offset-4"
-                    >
-                      @{data.champion.igHandle}
-                    </a>
+                    {isNoIg(data.champion.igHandle) ? null : (
+                      <a
+                        href={instagramUrl(data.champion.igHandle)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="mt-2 inline-flex min-h-12 items-center text-lg text-muted underline underline-offset-4"
+                      >
+                        @{data.champion.igHandle}
+                      </a>
+                    )}
                   </div>
                 ) : (
                   <p className="text-lg text-muted">The tournament is over.</p>
