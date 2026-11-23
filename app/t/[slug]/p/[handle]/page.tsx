@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { cache } from "react";
 import { brand } from "@/lib/config";
+import { atHandle, isNoIg } from "@/lib/handles";
 import { SharePageButton } from "@/components/share/SharePageButton";
 import { StoryButton } from "@/components/share/StoryButton";
 import { GoToList } from "@/components/GoToList";
@@ -29,7 +30,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const v = await load(slug, handle);
   if (!v) return { title: "Not found" };
   const title = `Vote for ${v.entrant.displayName}`;
-  const description = `${v.entrant.displayName} (@${v.entrant.igHandle}) is in the ${v.tournament.name}. Vote at ${new URL(brand.siteUrl).host}.`;
+  const description = `${v.entrant.displayName}${isNoIg(v.entrant.igHandle) ? "" : ` (${atHandle(v.entrant.igHandle)})`} is in the ${v.tournament.name}. Vote at ${new URL(brand.siteUrl).host}.`;
   const image = { url: `/api/og/entrant?id=${v.entrant.id}&size=og`, width: 1200, height: 630, alt: title };
   return {
     title,
@@ -59,14 +60,16 @@ export default async function EntrantPage({ params }: Props) {
             {entrant.seed != null ? `Seed ${entrant.seed}` : tournament.category}
           </p>
           <h1 className="display mt-3 text-5xl sm:text-6xl">{entrant.displayName}</h1>
-          <a
-            href={`https://www.instagram.com/${entrant.igHandle}/`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-2 inline-flex min-h-12 items-center text-lg text-muted underline underline-offset-4"
-          >
-            @{entrant.igHandle}
-          </a>
+          {isNoIg(entrant.igHandle) ? null : (
+            <a
+              href={`https://www.instagram.com/${entrant.igHandle}/`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-2 inline-flex min-h-12 items-center text-lg text-muted underline underline-offset-4"
+            >
+              @{entrant.igHandle}
+            </a>
+          )}
         </div>
 
         {v.champion ? (
@@ -82,7 +85,7 @@ export default async function EntrantPage({ params }: Props) {
             <p className="display text-3xl">
               vs {opp ? `${opp.seed != null ? `(${opp.seed}) ` : ""}${opp.displayName}` : "TBD"}
             </p>
-            {opp && <p className="text-muted">@{opp.igHandle}</p>}
+            {opp && !isNoIg(opp.igHandle) && <p className="text-muted">@{opp.igHandle}</p>}
             <p className="text-lg text-muted">
               {open ? `Closes ${when(current.matchup.closesAt)}` : `Voting opens ${when(current.matchup.opensAt)}`}
             </p>
