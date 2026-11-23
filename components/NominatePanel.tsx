@@ -257,6 +257,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                     type="button"
                     onClick={() => void upvote(row)}
                     disabled={row.upvotedByMe || closed || pending.has(row.id) || votesLeft === 0}
+                    style={row.upvotedByMe ? { background: "#16a34a", color: "#fff", borderColor: "#16a34a", opacity: 1 } : undefined}
                     aria-label={
                       row.upvotedByMe
                         ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes`
@@ -270,7 +271,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                       </svg>
                       <span className="text-xl tabular-nums">{row.upvoteCount}</span>
                     </span>
-                    <span className="text-xs tracking-widest">{row.upvotedByMe ? "Upvoted" : "Upvote"}</span>
+                    <span className="text-xs tracking-widest">{row.upvotedByMe ? "\u2713 Voted" : "Upvote"}</span>
                   </button>
                   <div className="flex basis-full justify-center">
                     <StoryButton
