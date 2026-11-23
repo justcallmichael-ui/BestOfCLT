@@ -162,6 +162,43 @@ async function hasUpvoted(db: Db, entrantId: string, voterId: string): Promise<b
   return r.length > 0;
 }
 
+export type RemoveUpvoteResult = { kind: "ok"; upvoteCount: number } | { kind: "closed" } | { kind: "not_found" };
+
+/** Takes back a vote while nominations are open. The voter gets that vote back. */
+export async function removeUpvote(input: { entrantId: string; voterId: string; now?: Date }): Promise<RemoveUpvoteResult> {
+  const now = input.now ?? new Date();
+  return getDb().tx(async (tx): Promise<RemoveUpvoteResult> => {
+    const [e] = await tx.query<{
+      id: string;
+      status: string;
+      t_status: string;
+      nominations_close_at: Date | string | null;
+      tid: string;
+    }>(
+      `select e.id, e.status, t.status as t_status, t.nominations_close_at, t.id as tid
+       from entrants e join tournaments t on t.id = e.tournament_id where e.id = $1`,
+      [input.entrantId],
+    );
+    if (!e || e.status !== "approved") return { kind: "not_found" };
+    if (!phase({ id: e.tid, status: e.t_status, nominations_close_at: e.nominations_close_at }, now).open) {
+      return { kind: "closed" };
+    }
+    const del = await tx.query<{ id: string }>(
+      `delete from upvotes where entrant_id = $1 and voter_id = $2 returning id`,
+      [e.id, input.voterId],
+    );
+    if (del.length === 0) {
+      const [c] = await tx.query<{ upvote_count: number }>(`select upvote_count from entrants where id = $1`, [e.id]);
+      return { kind: "ok", upvoteCount: Number(c?.upvote_count ?? 0) };
+    }
+    const [c] = await tx.query<{ upvote_count: number }>(
+      `update entrants set upvote_count = greatest(upvote_count - 1, 0) where id = $1 returning upvote_count`,
+      [e.id],
+    );
+    return { kind: "ok", upvoteCount: Number(c.upvote_count) };
+  });
+}
+
 export type UpvoteResult =
   | { kind: "no_votes_left" }
   | { kind: "ok"; upvoteCount: number }
