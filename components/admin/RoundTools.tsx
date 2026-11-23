@@ -137,3 +137,30 @@ export function StartBracketForm({ tournamentId, defaultStart }: { tournamentId:
     </div>
   );
 }
+
+/** Pushes every game that has not finished back by some hours. Works as a pause: open games get more time. */
+export function DelayForm({ tournamentId }: { tournamentId: string }) {
+  const { run, busy, error } = useAdminPost();
+  const [h, setH] = useState("24");
+  const hours = Number(h);
+  const valid = Number.isInteger(hours) && hours >= 1 && hours <= 336;
+  return (
+    <div className="space-y-2">
+      <label className="block text-sm font-medium text-neutral-700">
+        Delay all remaining games (hours)
+        <input className={inputCls} type="number" min={1} max={336} value={h} onChange={(e) => setH(e.target.value)} />
+      </label>
+      <Btn
+        tone="light"
+        disabled={busy || !valid}
+        onClick={() => {
+          if (!window.confirm(`Push every game that has not finished back by ${hours} hours?`)) return;
+          void run("/api/admin/schedule/delay", { tournamentId, hours });
+        }}
+      >
+        {busy ? "Working..." : "Delay games"}
+      </Btn>
+      <ErrorText>{error}</ErrorText>
+    </div>
+  );
+}
