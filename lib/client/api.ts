@@ -42,6 +42,7 @@ export type TournamentState = {
   latestResults: MatchupCard[];
   nextOpensAt: string | null;
   scoresAsOf: string;
+  totalVotes?: number;
 };
 
 export type BracketMatchup = {
