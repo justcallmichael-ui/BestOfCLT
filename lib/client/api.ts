@@ -205,6 +205,11 @@ export const api = {
       method: "POST",
       body: { entrantId },
     }),
+  removeUpvote: (entrantId: string) =>
+    request<{ ok: true; upvoteCount: number }>("/api/upvote", {
+      method: "DELETE",
+      body: { entrantId },
+    }),
   nextMatchup: (slug: string) => request<NextMatchup>(`/api/t/${enc(slug)}/next`),
   vote: (matchupId: string, choice: "a" | "b") =>
     request<VoteResponse>("/api/vote", {
