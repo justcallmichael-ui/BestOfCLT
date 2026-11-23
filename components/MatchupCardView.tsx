@@ -1,5 +1,6 @@
 import type { Entrant, MatchupCard } from "@/lib/client/api";
 import { formatScore, formatWhen } from "@/lib/client/time";
+import { atHandle } from "@/lib/handles";
 import { PlaceLogo } from "./PlaceLogo";
 
 function Side({
@@ -32,7 +33,7 @@ function Side({
         <span className={`block truncate leading-tight ${winner ? "text-lg font-extrabold" : "text-base font-semibold"}`}>
           {e.displayName}
         </span>
-        <span className={`block truncate text-xs ${winner ? "" : "text-muted"}`}>@{e.igHandle}</span>
+        <span className={`block truncate text-xs ${winner ? "" : "text-muted"}`}>{atHandle(e.igHandle)}</span>
       </span>
       {score !== null ? <span className="text-lg font-bold tabular-nums">{formatScore(score)}</span> : null}
       {winner ? <span className="sr-only">Winner</span> : null}
