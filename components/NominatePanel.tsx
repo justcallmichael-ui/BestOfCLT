@@ -37,7 +37,6 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
   const [pending, setPending] = useState<Set<string>>(new Set());
 
   const [handle, setHandle] = useState("");
-  const [name, setName] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [formResult, setFormResult] = useState<{ text: string; good: boolean } | null>(null);
 
@@ -157,12 +156,11 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
     setSubmitting(true);
     setFormResult(null);
     try {
-      const r = await api.nominate(slug, handle.trim(), name.trim() || undefined);
+      const r = await api.nominate(slug, handle.trim());
       const msg = RESULT_TEXT[r.result] ?? { text: "Done.", good: true };
       setFormResult(msg);
       if (r.result === "created_pending" || r.result === "upvoted" || r.result === "already_upvoted") {
         setHandle("");
-        setName("");
       }
       if (r.result === "upvoted" || r.result === "created_pending") load();
     } catch (e) {
@@ -341,20 +339,6 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
               autoComplete="off"
               inputMode="url"
               required
-              className="field"
-            />
-          </div>
-          <div>
-            <label htmlFor="pname" className="mb-1 block font-semibold">
-              Place name <span className="font-normal text-muted">(optional)</span>
-            </label>
-            <input
-              id="pname"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              placeholder="Name as people know it"
-              maxLength={80}
-              autoComplete="off"
               className="field"
             />
           </div>
