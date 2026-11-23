@@ -196,10 +196,15 @@ export const api = {
   getTournament: (slug: string) => request<TournamentState>(`/api/t/${enc(slug)}`, { shared: true }),
   getBracket: (slug: string) => request<BracketResponse>(`/api/t/${enc(slug)}/bracket`, { shared: true }),
   getEntrants: (slug: string) => request<{ entrants: EntrantRow[] }>(`/api/t/${enc(slug)}/entrants`),
-  nominate: (slug: string, handle: string, displayName?: string) =>
+  nominate: (slug: string, handle: string, displayName?: string, noInstagram?: boolean) =>
     request<{ result: NominateResult; entrantId?: string }>("/api/nominate", {
       method: "POST",
-      body: displayName ? { slug, handle, displayName } : { slug, handle },
+      body: {
+        slug,
+        handle,
+        ...(displayName ? { displayName } : {}),
+        ...(noInstagram ? { noInstagram: true } : {}),
+      },
     }),
   upvote: (entrantId: string) =>
     request<{ ok: true; already: boolean; upvoteCount: number }>("/api/upvote", {
