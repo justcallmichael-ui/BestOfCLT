@@ -1,6 +1,6 @@
 import { brand } from "@/lib/config";
 import { getDb, type Db } from "@/lib/db";
-import { normalizeHandle } from "@/lib/handles";
+import { atHandle, isNoIg, normalizeHandle } from "@/lib/handles";
 import type { MatchupCard, MatchupStatus, PublicEntrant } from "@/lib/services/bracket";
 
 export const MAX_MENTIONS_PER_CAPTION = 20;
@@ -170,7 +170,7 @@ export function announcementCaptions(day: ShareDay, host: string = siteHost()): 
     day.status === "open" ? `${rounds}: today's matchups are live.` : `${rounds}: ${fmtWeekday(day.opensAt)}'s matchups.`;
   const lines: CaptionLine[] = day.matchups
     .filter((m) => m.a && m.b)
-    .map((m) => ({ text: `@${m.a!.igHandle} vs @${m.b!.igHandle}`, mentions: 2 }));
+    .map((m) => ({ text: `${atHandle(m.a!.igHandle) || m.a!.displayName} vs ${atHandle(m.b!.igHandle) || m.b!.displayName}`, mentions: [m.a!.igHandle, m.b!.igHandle].filter((h) => !isNoIg(h)).length }));
   return splitByMentionLimit(intro, lines, `Vote at ${host}. Link in bio.`);
 }
 
@@ -182,8 +182,8 @@ export function resultsCaptions(day: ShareDay, host: string = siteHost()): strin
     const r = matchupResult(m);
     if (!r) continue;
     lines.push({
-      text: `@${r.winner.igHandle} def. @${r.loser.igHandle}, ${r.winnerVotes} to ${r.loserVotes}`,
-      mentions: 2,
+      text: `${atHandle(r.winner.igHandle) || r.winner.displayName} def. ${atHandle(r.loser.igHandle) || r.loser.displayName}, ${r.winnerVotes} to ${r.loserVotes}`,
+      mentions: [r.winner.igHandle, r.loser.igHandle].filter((h) => !isNoIg(h)).length,
     });
   }
   return splitByMentionLimit(intro, lines, `Full bracket at ${host}. Link in bio.`);
@@ -450,7 +450,7 @@ export async function getPostsData(tournamentId: string, dbArg?: Db): Promise<Po
       title: TITLES[kind],
       day,
       captions: dayCaptions(day, host),
-      tags: day.handles.map((h) => `@${h}`),
+      tags: day.handles.filter((h) => !isNoIg(h)).map((h) => `@${h}`),
     });
   }
   return { tournament, voteUrl: voteUrl(tournament.slug), host, sections };
