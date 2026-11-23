@@ -291,7 +291,7 @@ export function NominatePanel({ slug, embedded = false }: { slug: string; embedd
                         ? `You upvoted ${row.displayName}. ${row.upvoteCount} upvotes. Tap to take it back`
                         : `Upvote ${row.displayName}. ${row.upvoteCount} upvotes so far`
                     }
-                    className={`btn min-w-20 flex-col gap-1 ${row.upvotedByMe || votesLeft === 0 ? "btn-ghost" : "btn-primary"}`}
+                    className="btn btn-ghost min-w-20 flex-col gap-1"
                   >
                     <span className="flex items-center gap-1.5">
                       <svg aria-hidden="true" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
