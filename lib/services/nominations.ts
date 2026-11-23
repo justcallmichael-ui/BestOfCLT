@@ -1,5 +1,5 @@
 import { getDb, type Db } from "@/lib/db";
-import { normalizeHandle } from "@/lib/handles";
+import { noIgHandle, normalizeHandle } from "@/lib/handles";
 import { VOTES_PER_VOTER } from "@/lib/config";
 import { nominationsIpLimited, nominationsLimited, upvoteDeviceLimited, upvoteIpLimited } from "@/lib/ratelimit";
 
@@ -98,12 +98,13 @@ export async function nominate(input: {
   slug: string;
   handle: string;
   displayName?: string;
+  noInstagram?: boolean;
   voterId: string;
   ipHash: string;
   now?: Date;
 }): Promise<NominateResult> {
   const now = input.now ?? new Date();
-  const handle = normalizeHandle(input.handle);
+  const handle = input.noInstagram ? noIgHandle(input.displayName ?? "") : normalizeHandle(input.handle);
   const db = getDb();
   return db.tx(async (tx): Promise<NominateResult> => {
     const [t] = await tx.query<{ id: string; status: string; nominations_close_at: Date | string | null }>(
