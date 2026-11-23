@@ -4,7 +4,7 @@ import { CreateTournamentForm } from "@/components/admin/CreateTournamentForm";
 import { requireAdminPage } from "@/components/admin/guard";
 import { fmtDate, toLocalInput } from "@/components/admin/format";
 import { ActionButton } from "@/components/admin/ui";
-import { StartBracketForm } from "@/components/admin/RoundTools";
+import { DelayForm, StartBracketForm } from "@/components/admin/RoundTools";
 import { SetCloseTime } from "@/components/admin/SetCloseTime";
 import { nextNoonEastern } from "@/lib/services/schedule";
 import { listTournaments } from "@/lib/services/admin";
@@ -14,7 +14,12 @@ export const dynamic = "force-dynamic";
 export default async function Dashboard() {
   await requireAdminPage();
   const tournaments = await listTournaments();
-  const defaultStart = toLocalInput(nextNoonEastern(new Date()));
+  const now = new Date();
+  // First game day defaults to the next noon after nominations close, never before it.
+  const startFor = (close: Date | string | null) => {
+    const c = close ? new Date(close) : null;
+    return toLocalInput(nextNoonEastern(c && c.getTime() > now.getTime() ? c : now));
+  };
   return (
     <>
       <AdminNav />
@@ -44,11 +49,16 @@ export default async function Dashboard() {
               </ActionButton>
             )}
             {(t.status === "draft" || t.status === "nominations") && (
-              <SetCloseTime tournamentId={t.id} current={t.nominations_close_at ? toLocalInput(t.nominations_close_at) : ""} />
+              <SetCloseTime
+                tournamentId={t.id}
+                current={t.nominations_close_at ? toLocalInput(t.nominations_close_at) : ""}
+                currentIso={t.nominations_close_at ? new Date(t.nominations_close_at).toISOString() : null}
+              />
             )}
             {t.status === "nominations" && (
-              <StartBracketForm tournamentId={t.id} defaultStart={defaultStart} />
+              <StartBracketForm tournamentId={t.id} defaultStart={startFor(t.nominations_close_at)} />
             )}
+            {t.status === "bracket" && <DelayForm tournamentId={t.id} />}
             <div className="flex flex-wrap gap-2 text-sm font-medium">
               <Link className="rounded-lg bg-neutral-200 px-3 py-2" href={`/admin/t/${t.id}/review`}>Review ({t.pending_count})</Link>
               <Link className="rounded-lg bg-neutral-200 px-3 py-2" href={`/admin/t/${t.id}/entrants`}>Entrants</Link>
