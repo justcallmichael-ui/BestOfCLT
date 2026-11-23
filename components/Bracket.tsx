@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { api, errorMessage, type BracketMatchup, type BracketRound, type Entrant } from "@/lib/client/api";
 import { prefersReducedMotion, useRefreshAt, useScoresRefresh } from "@/lib/client/hooks";
 import { formatScore, formatWhen } from "@/lib/client/time";
+import { atHandle } from "@/lib/handles";
 import { PlaceLogo } from "./PlaceLogo";
 import { ScoresNote } from "./ScoresNote";
 import { ErrorBlock, LoadingBlock } from "./Status";
@@ -246,7 +247,7 @@ function Slot({ e, votes, winner, lost }: { e: Entrant | null; votes: string | n
         <span className={`block truncate leading-tight ${winner ? "text-base font-extrabold" : "text-sm font-semibold"} ${lost ? "line-through decoration-1" : ""}`}>
           {e.displayName}
         </span>
-        <span className={`block truncate text-xs ${winner ? "" : "text-muted"}`}>@{e.igHandle}</span>
+        <span className={`block truncate text-xs ${winner ? "" : "text-muted"}`}>{atHandle(e.igHandle)}</span>
       </span>
       {votes ? <span className="text-sm font-bold tabular-nums">{votes}</span> : null}
       {winner ? <span className="sr-only">Winner</span> : null}
